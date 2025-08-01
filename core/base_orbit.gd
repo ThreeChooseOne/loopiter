@@ -6,11 +6,12 @@ class_name BaseOrbit extends Path2D
 var speed = 100
 
 func _init(radius: float, center: Vector2) -> void:
-	center = get_viewport_rect().size/2.0
 	curve = Curve2D.new()
 	for n in 100:
 		var angle = 2*PI*n/100
 		var delta_vec: Vector2 = Vector2.from_angle(angle)
 		var new_point: Vector2 = center + radius*delta_vec
 		curve.add_point(new_point)
+	# close the LOOP???
+	curve.add_point(center + radius*Vector2(1,0))
 	return

@@ -22,6 +22,7 @@ var sprite: Sprite2D
 func _init():
 	follower = PathFollow2D.new()
 	sprite = Sprite2D.new()
+	add_random_planet()
 	
 func add_random_planet() -> void:
 	var random_planet_png = planets[randi() % planets.size()]
