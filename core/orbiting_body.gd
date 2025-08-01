@@ -1,6 +1,7 @@
-extends Path2D
+class_name OrbitingBody extends Node2D
 
 @export var speed: int = 100
+
 @export var planet_size: Vector2 = Vector2(75.0, 75.0)
 
 # TODO: repeated code, move both copies somewhere else
@@ -16,21 +17,27 @@ var planets = [
 	preload("res://assets/planets/planet09.png"),
 ]
 
-func _process(delta: float) -> void:
-	for body in get_children():
-		if body is PathFollow2D:
-			body.progress += speed * delta
+var follower: PathFollow2D
+var sprite: Sprite2D
 
-# TODO: Temp, adds random planet
+func _init():
+	follower = PathFollow2D.new()
+	sprite = Sprite2D.new()
+	add_random_planet()
+	
 # TODO: repeated code, move both copies somewhere else
 func add_random_planet() -> void:
-	var follower = PathFollow2D.new()
-	var sprite = Sprite2D.new()
-
 	var random_planet_png = planets[randi() % planets.size()]
 	sprite.texture = random_planet_png
 	var texture_size = sprite.texture.get_size()
 	var scale_factor = Vector2(planet_size.x / texture_size.x, planet_size.y / texture_size.y)
 	sprite.scale = scale_factor
 	follower.add_child(sprite)
-	add_child(follower)
+	
+# TODO: unnecessary function?
+func get_follower() -> PathFollow2D:
+	return follower
+
+# TODO: should this be triggered externally?	
+func update(delta: float):
+	follower.progress += speed * delta
