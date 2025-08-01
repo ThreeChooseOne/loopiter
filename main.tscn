@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://3dw6xlotynkf"]
 
-[ext_resource type="Script" path="res://orbit.gd" id="1_j4n3n"]
-[ext_resource type="Script" path="res://main.gd" id="1_ynt7j"]
+[ext_resource type="Script" uid="uid://bdm1t4likdkrr" path="res://orbit.gd" id="1_j4n3n"]
+[ext_resource type="Script" uid="uid://dkwumx5aqm8c4" path="res://main.gd" id="1_ynt7j"]
 
 [sub_resource type="Curve2D" id="Curve2D_a2kch"]
 _data = {
