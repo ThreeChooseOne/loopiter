@@ -26,6 +26,7 @@ offset_left = 1034.0
 offset_top = 19.0
 offset_right = 1130.0
 offset_bottom = 59.0
+step = 0.01
 texture_under = ExtResource("3_lquwl")
 texture_progress = ExtResource("4_7mycd")
 script = ExtResource("5_7mycd")
