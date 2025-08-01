@@ -1,6 +1,5 @@
 extends TextureProgressBar
 
 func _process(delta: float) -> void:
-	var progress = fmod(self.get_value() + 20*delta, 100.0)
-	self.set_value_no_signal(progress)
+	value = fmod(value + 20 * delta, 100.0)
 	return
