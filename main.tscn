@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://3dw6xlotynkf"]
+
+[ext_resource type="Script" path="res://orbit.gd" id="1_j4n3n"]
+[ext_resource type="Script" path="res://main.gd" id="1_ynt7j"]
+
+[sub_resource type="Curve2D" id="Curve2D_a2kch"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 216, 295, -302.162, -0.65121, 302.162, 0.65121, 525, 101, 0, 0, 0, 0, 836, 302, 317.139, -2.60484, -317.139, 2.60484, 524, 495, 0, 0, 0, 0, 216, 295)
+}
+point_count = 5
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_ynt7j")
+
+[node name="Orbit" type="Path2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(48, -93.4518)
+scale = Vector2(1, 1.38071)
+curve = SubResource("Curve2D_a2kch")
+script = ExtResource("1_j4n3n")
