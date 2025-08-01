@@ -12,6 +12,7 @@ func _ready() -> void:
 	
 	# Add 5 orbits
 	for n in 5:
+		# TODO: figure out the radius ranges
 		var orbit_radius = (n+1)*300.0
 		var center = get_viewport_rect().size/2.0
 		var new_orbit = BaseOrbit.new(orbit_radius, center)
@@ -21,6 +22,8 @@ func _ready() -> void:
 	var gen_moon = OrbitingBody.new() # creates a random asset for it
 	moons.append(gen_moon)
 	orbits[0].add_child(gen_moon.get_follower())
+	
+	# TODO: Add more moons
 	
 	# TODO: Refactor this visualization code somewhere else
 	# debug_orbit = Line2D.new()

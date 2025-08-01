@@ -3,6 +3,7 @@ extends Path2D
 @export var speed: int = 100
 @export var planet_size: Vector2 = Vector2(75.0, 75.0)
 
+# TODO: repeated code, move both copies somewhere else
 var planets = [
 	preload("res://assets/planets/planet00.png"),
 	preload("res://assets/planets/planet01.png"),
@@ -21,6 +22,7 @@ func _process(delta: float) -> void:
 			body.progress += speed * delta
 
 # TODO: Temp, adds random planet
+# TODO: repeated code, move both copies somewhere else
 func add_random_planet() -> void:
 	var follower = PathFollow2D.new()
 	var sprite = Sprite2D.new()

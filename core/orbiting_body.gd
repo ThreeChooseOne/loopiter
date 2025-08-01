@@ -4,6 +4,7 @@ class_name OrbitingBody extends Node2D
 
 @export var planet_size: Vector2 = Vector2(75.0, 75.0)
 
+# TODO: repeated code, move both copies somewhere else
 var planets = [
 	preload("res://assets/planets/planet00.png"),
 	preload("res://assets/planets/planet01.png"),
@@ -24,6 +25,7 @@ func _init():
 	sprite = Sprite2D.new()
 	add_random_planet()
 	
+# TODO: repeated code, move both copies somewhere else
 func add_random_planet() -> void:
 	var random_planet_png = planets[randi() % planets.size()]
 	sprite.texture = random_planet_png
@@ -32,8 +34,10 @@ func add_random_planet() -> void:
 	sprite.scale = scale_factor
 	follower.add_child(sprite)
 	
+# TODO: unnecessary function?
 func get_follower() -> PathFollow2D:
 	return follower
-	
+
+# TODO: should this be triggered externally?	
 func update(delta: float):
 	follower.progress += speed * delta
