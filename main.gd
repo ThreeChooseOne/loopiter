@@ -5,7 +5,7 @@ extends Node2D
 var orbits: Array[BaseOrbit] = []
 
 var moons: Array[OrbitingBody] = []
-var debug_orbit
+
 func _ready() -> void:
 	# Initialize orbit with a random planet
 	orbit.add_random_planet()
@@ -18,7 +18,7 @@ func _ready() -> void:
 		orbits.append(new_orbit)
 		add_child(new_orbit)
 	
-	var gen_moon = OrbitingBody.new()
+	var gen_moon = OrbitingBody.new() # creates a random asset for it
 	moons.append(gen_moon)
 	orbits[0].add_child(gen_moon.get_follower())
 	

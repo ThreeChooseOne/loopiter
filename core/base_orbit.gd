@@ -1,5 +1,7 @@
 class_name BaseOrbit extends Path2D
 
+# TODO: delete this parent scene? this class should just be a script only now
+
 @export var radius: float = 1.0
 @export var center: Vector2 = Vector2(0.0, 0.0)
 
