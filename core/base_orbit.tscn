@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://ci3lm7s2x28ie"]
+
+[ext_resource type="Script" uid="uid://bxlbjj0ht5opg" path="res://core/base_orbit.gd" id="1_fi3r2"]
+
+[sub_resource type="Curve2D" id="Curve2D_5x0sw"]
+
+[node name="BaseOrbit" type="Path2D"]
+curve = SubResource("Curve2D_5x0sw")
+script = ExtResource("1_fi3r2")
