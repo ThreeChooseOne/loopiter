@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://3dw6xlotynkf"]
+[gd_scene load_steps=5 format=3 uid="uid://3dw6xlotynkf"]
 
-[ext_resource type="Script" uid="uid://bdm1t4likdkrr" path="res://orbit.gd" id="1_j4n3n"]
-[ext_resource type="Script" uid="uid://dkwumx5aqm8c4" path="res://main.gd" id="1_ynt7j"]
+[ext_resource type="Script" uid="uid://d227o2lv8oxjh" path="res://orbit.gd" id="1_j4n3n"]
+[ext_resource type="Script" uid="uid://b045i43aucklb" path="res://main.gd" id="1_ynt7j"]
+[ext_resource type="Texture2D" uid="uid://cpd33lvyxjedx" path="res://assets/background-test.png" id="2_h2yge"]
 
 [sub_resource type="Curve2D" id="Curve2D_a2kch"]
 _data = {
@@ -12,9 +13,14 @@ point_count = 5
 [node name="Main" type="Node2D"]
 script = ExtResource("1_ynt7j")
 
+[node name="StaticBackground" type="Sprite2D" parent="."]
+position = Vector2(576, 324)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_h2yge")
+
 [node name="Orbit" type="Path2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(48, -93.4518)
-scale = Vector2(1, 1.38071)
+position = Vector2(-37.1291, -138.114)
+scale = Vector2(1.12097, 1.54569)
 curve = SubResource("Curve2D_a2kch")
 script = ExtResource("1_j4n3n")
