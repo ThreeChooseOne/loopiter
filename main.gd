@@ -1,36 +1,38 @@
 extends Node2D
 
-@onready var orbit: Path2D = %Orbit
-
 var orbits: Array[BaseOrbit] = []
-
-var moons: Array[OrbitingBody] = []
+var max_viewport_size: Vector2
+const player_scene = preload("res://core/player.tscn")
 
 func _ready() -> void:
-	# Initialize orbit with a random planet
-	orbit.add_random_planet()
+	max_viewport_size = get_viewport_rect().size
+	
+	$SpaceBackground.size = max_viewport_size
+	$JupiterBG_Container.size = max_viewport_size
 	
 	# Add 5 orbits
-	for n in 5:
+	var min_orbit_radius = 200
+	var max_orbit_radius = min(max_viewport_size.x, max_viewport_size.y)/2.2
+	
+	for n in 21:
 		# TODO: figure out the radius ranges
-		var orbit_radius = (n+1)*300.0
+		var orbit_radius = min_orbit_radius + (n/21.0)*(max_orbit_radius - min_orbit_radius)
 		var center = get_viewport_rect().size/2.0
 		var new_orbit = BaseOrbit.new(orbit_radius, center)
 		orbits.append(new_orbit)
 		add_child(new_orbit)
 	
-	var gen_moon = OrbitingBody.new() # creates a random asset for it
-	moons.append(gen_moon)
-	orbits[0].add_child(gen_moon.get_follower())
+	var gen_moon = OrbitingBody.new()
+	gen_moon.init_random_planet()
+	orbits[0].add_child(gen_moon)
 	
-	# TODO: Add more moons
+	orbits[0].visualize_debug(true)
+	orbits[10].visualize_debug(true)
+	orbits[20].visualize_debug(true)
 	
-	# TODO: Refactor this visualization code somewhere else
-	# debug_orbit = Line2D.new()
-	# debug_orbit.points = orbits[0].curve.get_baked_points()
-	# add_child(debug_orbit)
-	
-func _process(delta: float) -> void:
-	# Should main be updating the orbits?
-	for mm in moons:
-		mm.update(delta)
+	var player = player_scene.instantiate()
+	orbits[10].add_child(player)
+
+	# Hooks up signal to increment research meter
+	$PlayerCamera.enter_key_pressed.connect(gen_moon._on_enter_pressed)
+	$PlayerCamera.update_camera_position(Vector2(0,0))
