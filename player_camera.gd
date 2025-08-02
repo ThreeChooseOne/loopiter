@@ -1,5 +1,7 @@
 extends Camera2D
 
+signal enter_key_pressed
+
 var max_viewport_size: Vector2
 
 func _ready() -> void:
@@ -8,6 +10,10 @@ func _ready() -> void:
 
 func _input(event: InputEvent):
 	handle_movement_input(event)
+	
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_SPACE:  # Space key
+			enter_key_pressed.emit()
 	pass
 
 func handle_movement_input(event: InputEvent) -> bool:

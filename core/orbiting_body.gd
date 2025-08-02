@@ -19,10 +19,14 @@ var planets = [
 
 var follower: PathFollow2D
 var sprite: Sprite2D
+var research: TextureProgressBar
+var research_value = 0
 
 func _init():
 	follower = PathFollow2D.new()
 	sprite = Sprite2D.new()
+	research = TextureProgressBar.new()
+	research.texture_under = preload("res://assets/tank.svg")
 	add_random_planet()
 	
 # TODO: repeated code, move both copies somewhere else
@@ -32,7 +36,23 @@ func add_random_planet() -> void:
 	var texture_size = sprite.texture.get_size()
 	var scale_factor = Vector2(planet_size.x / texture_size.x, planet_size.y / texture_size.y)
 	sprite.scale = scale_factor
+	follower.rotates = false
 	follower.add_child(sprite)
+	
+	research.set_position(Vector2(-25, -50))
+	research.scale = Vector2(.5, .5)
+	research.min_value = 0
+	research.max_value = 3
+	research.step = 1
+	follower.add_child(research)
+	
+	
+func _on_enter_pressed():
+	increment_research()
+
+func increment_research():
+	research.value = min(research.value + 1, research.max_value)
+	print("Progress: ", research.value, "/", research.max_value)
 	
 # TODO: unnecessary function?
 func get_follower() -> PathFollow2D:
