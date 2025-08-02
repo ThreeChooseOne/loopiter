@@ -47,6 +47,12 @@ func handle_movement_input(event: InputEvent) -> bool:
 	return false
 
 func handle_scroll_input(event: InputEvent):
+	if event is InputEventKey:
+		if event.pressed and event.keycode == KEY_EQUAL:
+			zoom = ZOOM_MAX.min(zoom + ZOOM_SPD*10)
+		if event.pressed and event.keycode == KEY_MINUS:
+			zoom = ZOOM_MIN.max(zoom - ZOOM_SPD*10)
+
 	if event is not InputEventMouseButton:
 		return false
 	var emb = event as InputEventMouseButton
