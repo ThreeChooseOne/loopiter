@@ -20,7 +20,6 @@ var planets = [
 var follower: PathFollow2D
 var sprite: Sprite2D
 var research: TextureProgressBar
-var research_value = 0
 
 func _init():
 	follower = PathFollow2D.new()
