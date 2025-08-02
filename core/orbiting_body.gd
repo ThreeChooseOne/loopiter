@@ -33,11 +33,13 @@ func init_random_planet() -> void:
 	
 	research = TextureProgressBar.new()
 	research.texture_under = preload("res://assets/tank.svg")
+	research.texture_progress = preload("res://assets/fuel.svg")
 	research.set_position(Vector2(-25, -50))
 	research.scale = Vector2(.5, .5)
 	research.min_value = 0
 	research.max_value = 3
 	research.step = 1
+	research.value = 0
 	add_child(research)
 
 func _on_enter_pressed():
