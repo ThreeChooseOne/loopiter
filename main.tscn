@@ -43,4 +43,6 @@ texture_progress = ExtResource("4_7mycd")
 script = ExtResource("5_7mycd")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
+unique_name_in_owner = true
+zoom = Vector2(2.7, 2.7)
 script = ExtResource("9_kek77")

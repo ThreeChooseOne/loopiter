@@ -3,6 +3,9 @@ extends Node2D
 var orbits: Array[BaseOrbit] = []
 var max_viewport_size: Vector2
 const player_scene = preload("res://core/player.tscn")
+var player: OrbitingBody
+
+@onready var camera = %PlayerCamera
 
 func _ready() -> void:
 	max_viewport_size = get_viewport_rect().size
@@ -30,9 +33,12 @@ func _ready() -> void:
 	orbits[10].visualize_debug(true)
 	orbits[20].visualize_debug(true)
 	
-	var player = player_scene.instantiate()
+	player = player_scene.instantiate()
 	orbits[10].add_child(player)
 
 	# Hooks up signal to increment research meter
 	$PlayerCamera.enter_key_pressed.connect(gen_moon._on_enter_pressed)
-	$PlayerCamera.update_camera_position(Vector2(0,0))
+
+
+func _process(delta: float) -> void:
+	camera.position = player.position
