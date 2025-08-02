@@ -5,6 +5,10 @@ signal body_collided(body)
 signal area_collided(area)
 
 @export var speed: int = 100
+@export var MAX_SPEED: int = 300
+@export var MIN_SPEED: int = 50
+
+@export var speed: int = 100
 @export var planet_size: Vector2 = Vector2(75.0, 75.0)
 
 # TODO: repeated code, move both copies somewhere else
@@ -102,6 +106,14 @@ func handle_planet_collision(other_planet: OrbitingBody):
 	# - Sound effects
 	# - Damage/destruction
 	# - Bouncing physics
+	
+func _on_up_pressed():
+	speed += 20
+	speed = clamp(speed, MIN_SPEED, MAX_SPEED)
+	
+func _on_down_pressed():
+	speed -= 20
+	speed = clamp(speed, MIN_SPEED, MAX_SPEED)
 
 func _on_enter_pressed():
 	increment_research()

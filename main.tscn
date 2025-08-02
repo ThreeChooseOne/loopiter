@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://3dw6xlotynkf"]
+[gd_scene load_steps=8 format=3 uid="uid://3dw6xlotynkf"]
 
 [ext_resource type="Script" uid="uid://dkwumx5aqm8c4" path="res://main.gd" id="1_ynt7j"]
 [ext_resource type="Texture2D" uid="uid://cpd33lvyxjedx" path="res://assets/background-test.png" id="2_h2yge"]
@@ -6,8 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://cko1c37bawhm0" path="res://assets/tank.svg" id="3_lquwl"]
 [ext_resource type="Texture2D" uid="uid://bswv4joab5bvy" path="res://assets/background/jupiter-only.png" id="4_5vw27"]
 [ext_resource type="Texture2D" uid="uid://61ssauhjp5ex" path="res://assets/fuel.svg" id="4_7mycd"]
-[ext_resource type="Script" path="res://fuel_gauge.gd" id="5_7mycd"]
 [ext_resource type="Script" uid="uid://bgkk2i7hxraho" path="res://player_camera.gd" id="9_kek77"]
+[ext_resource type="Script" uid="uid://dn0poplegmhor" path="res://fuel_gauge.gd" id="5_7mycd"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_ynt7j")
@@ -32,18 +32,17 @@ position = Vector2(576, 324)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_h2yge")
 
-[node name="Fuel" type="TextureProgressBar" parent="."]
-offset_left = 1034.0
-offset_top = 19.0
-offset_right = 1130.0
-offset_bottom = 59.0
+[node name="PlayerCamera" type="Camera2D" parent="."]
+unique_name_in_owner = true
+ignore_rotation = false
+zoom = Vector2(2.5, 2.5)
+
+[node name="Fuel" type="TextureProgressBar" parent="PlayerCamera"]
+offset_left = -350.0
+offset_top = -180.0
+offset_right = -254.0
+offset_bottom = -140.0
 step = 0.01
 texture_under = ExtResource("3_lquwl")
 texture_progress = ExtResource("4_7mycd")
 script = ExtResource("5_7mycd")
-
-[node name="PlayerCamera" type="Camera2D" parent="."]
-unique_name_in_owner = true
-ignore_rotation = false
-zoom = Vector2(3, 3)
-script = ExtResource("9_kek77")
