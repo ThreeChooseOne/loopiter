@@ -1,12 +1,20 @@
-[gd_scene load_steps=3 format=3 uid="uid://dywblgg6a1vs4"]
+[gd_scene load_steps=4 format=3 uid="uid://d38bucw5q2q2u"]
 
 [ext_resource type="Script" uid="uid://jyfubykokonk" path="res://core/orbiting_body.gd" id="1_3x74s"]
 [ext_resource type="Texture2D" uid="uid://r3qtpiwsrdmm" path="res://assets/spaceBuilding_023.png" id="2_ptdtg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ptdtg"]
+radius = 38.0
 
 [node name="Player" type="PathFollow2D"]
 script = ExtResource("1_3x74s")
 metadata/_custom_type_script = "uid://jyfubykokonk"
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_ptdtg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_ptdtg")
