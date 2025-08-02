@@ -32,6 +32,7 @@ const MAX_ORBIT_SPEED = 140
 # Moon positioning settings
 const MIN_MOON_DISTANCE = 0.15 # Minimum distance between moons (as fraction of orbit)
 const POSITION_RANDOMNESS = 0.08  # How much to randomly offset from even spacing
+const MIN_DISTANCE_FROM_PLAYER = 0.25  # Keep moons at least 25% away from player on orbit 10
 
 func _ready() -> void:
 	# Add 21 orbits
@@ -60,7 +61,7 @@ func _ready() -> void:
 	orbits[15].visualize_debug(true)
 	orbits[20].visualize_debug(true)
 	
-	# Create player
+	# Create player on orbit 10
 	player = player_scene.instantiate()
 	player.name = "Player" # Important for collision detection
 	orbits[10].add_child(player)
@@ -92,8 +93,8 @@ func add_moons_to_orbit(orbit_index: int):
 	var orbit = orbits[orbit_index]
 	var orbit_speed = orbit_speeds[orbit_index]
 	
-	# Generate positions for all moons in this orbit
-	var moon_positions = generate_moon_positions(moons_per_orbit)
+		# Generate positions for all moons in this orbit (player-aware for orbit 10)
+	var moon_positions = generate_moon_positions_safe(moons_per_orbit, orbit_index)
 	
 	for moon_index in range(moons_per_orbit):
 		var moon = create_moon(orbit_index, moon_index, orbit_speed)
@@ -105,15 +106,25 @@ func add_moons_to_orbit(orbit_index: int):
 		moon.progress_ratio = moon_progress
 		
 		print("Created moon ", moon.name, " at progress ", "%.3f" % moon_progress, " with speed ", orbit_speed)
+		
+		# Extra safety check for player orbit
+		if orbit_index == 10:
+			var distance_from_player = calculate_circular_distance(moon_progress, 0.0)
+			print("  Distance from player: ", "%.3f" % distance_from_player)
 
-func generate_moon_positions(num_moons: int) -> Array[float]:
-	# Generate well-spaced positions for moons on an orbit
+func generate_moon_positions_safe(num_moons: int, orbit_index: int) -> Array[float]:
+	# Generate well-spaced positions for moons, avoiding player if on same orbit
 	var positions: Array[float] = []
+	var player_position = 0.0  # Player starts at progress 0
 	
 	# Start with even spacing
 	for i in range(num_moons):
 		var base_position = float(i) / float(num_moons)
 		positions.append(base_position)
+	
+	# If this is the player's orbit, adjust base positions to avoid player
+	if orbit_index == 10:
+		positions = adjust_positions_for_player(positions, player_position)
 	
 	# Add controlled randomness while maintaining minimum distance
 	for i in range(positions.size()):
@@ -123,12 +134,39 @@ func generate_moon_positions(num_moons: int) -> Array[float]:
 		# Wrap around the orbit (0.0 to 1.0)
 		new_position = fmod(new_position + 1.0, 1.0)
 		
-		# Check if this position is valid (far enough from other moons)
-		if is_position_valid(new_position, positions, i):
+		# Check if this position is valid (far enough from other moons AND player)
+		var valid_position = is_position_valid(new_position, positions, i)
+		
+		# If this is the player's orbit, also check distance from player
+		if orbit_index == 10:
+			var distance_from_player = calculate_circular_distance(new_position, player_position)
+			if distance_from_player < MIN_DISTANCE_FROM_PLAYER:
+				valid_position = false
+		
+		if valid_position:
 			positions[i] = new_position
-		# If not valid, keep the original even spacing position
+		# If not valid, keep the original safe position
 	
 	return positions
+	
+func adjust_positions_for_player(positions: Array[float], player_position: float) -> Array[float]:
+	# Adjust base positions to ensure they're far from player
+	var safe_positions: Array[float] = []
+	
+	for i in range(positions.size()):
+		var base_pos = positions[i]
+		var distance_from_player = calculate_circular_distance(base_pos, player_position)
+		
+		if distance_from_player < MIN_DISTANCE_FROM_PLAYER:
+			# Move this position to a safe location
+			var safe_pos = player_position + MIN_DISTANCE_FROM_PLAYER + (i * 0.15)
+			safe_pos = fmod(safe_pos, 1.0)  # Wrap around
+			safe_positions.append(safe_pos)
+			print("  Adjusted moon ", i, " from ", "%.3f" % base_pos, " to ", "%.3f" % safe_pos, " (too close to player)")
+		else:
+			safe_positions.append(base_pos)
+	
+	return safe_positions
 	
 func is_position_valid(test_position: float, existing_positions: Array[float], skip_index: int) -> bool:
 	# Check if a position is far enough from all other moons
