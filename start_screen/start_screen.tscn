@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3 uid="uid://debfvlgbpxnjv"]
+
+[ext_resource type="Script" uid="uid://b7dlyl0ohs5xq" path="res://start_screen/start_screen_control.gd" id="1_8bm5k"]
+[ext_resource type="Texture2D" uid="uid://d1o16ymy3l17a" path="res://assets/ui/panel_glass.png" id="1_rs4r3"]
+[ext_resource type="Theme" uid="uid://ckwnik6wg05q3" path="res://assets/theme/theme1.tres" id="3_c3q8q"]
+
+[node name="StartScreenControl" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_8bm5k")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+scale = Vector2(2, 2)
+texture = ExtResource("1_rs4r3")
+stretch_mode = 1
+
+[node name="CenterButtons" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 159.0
+offset_bottom = 180.0
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterButtons"]
+layout_mode = 2
+alignment = 1
+
+[node name="StartGame" type="Button" parent="CenterButtons/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_c3q8q")
+text = "Start"
+
+[node name="Tutorial" type="Button" parent="CenterButtons/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_c3q8q")
+text = "Tutorial"
+
+[connection signal="pressed" from="CenterButtons/VBoxContainer/StartGame" to="." method="_on_start_game_pressed"]
