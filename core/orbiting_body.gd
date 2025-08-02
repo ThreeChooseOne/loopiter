@@ -194,13 +194,6 @@ func _on_down_pressed():
 	speed -= 20
 	speed = clamp(speed, MIN_SPEED, MAX_SPEED)
 
-func _on_enter_pressed():
-	increment_research()
-
-func increment_research():
-	research.value = min(research.value + 1, research.max_value)
-	print("Progress: ", research.value, "/", research.max_value)
-
 func _process(delta: float) -> void:
 	progress += speed * delta
 	

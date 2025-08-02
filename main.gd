@@ -11,7 +11,6 @@ var all_moons: Array[OrbitingBody] = []
 var orbit_speeds: Dictionary = {}
 
 # Input signals
-signal enter_key_pressed
 signal up_key_pressed
 signal down_key_pressed
 
@@ -168,7 +167,6 @@ func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> Orbitin
 	
 	# Connect collision signals
 	moon.body_collided.connect(_on_moon_collision)
-	moon.area_collided.connect(_on_moon_area_collision)
 	moon.research_area_entered.connect(_on_moon_research_entered)
 	moon.research_area_exited.connect(_on_moon_research_exited)
 	
@@ -182,11 +180,6 @@ func _on_moon_collision(body):
 	# Check if it's the player
 	if body == player:
 		handle_player_moon_collision()
-
-# TODO: Might not need this
-func _on_moon_area_collision(area):
-	print("Moon collided with area: ", area.name)
-	# Handle area-to-area collisions (like moon hitting another moon)
 
 func _on_player_collision(body):
 	print("Player collided with: ", body.name)
@@ -242,8 +235,6 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
-			KEY_SPACE:
-				enter_key_pressed.emit()
 			KEY_UP:
 				up_key_pressed.emit()
 			KEY_DOWN:
