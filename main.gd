@@ -10,6 +10,9 @@ signal up_key_pressed
 signal down_key_pressed
 
 @onready var camera = %PlayerCamera
+@onready var fuel = %Fuel
+
+const fuel_cost = 20
 
 const num_orbits = 21
 
@@ -102,6 +105,10 @@ func move_player_inner_orbit():
 	move_player_orbit(false)
 
 func move_player_orbit(out: bool):
+	if fuel.value < fuel_cost:
+		return
+	fuel.value -= fuel_cost
+
 	var curr = current_player_orbit()
 	var new = curr + (1 if out else -1)
 	new = clamp(new, 0, num_orbits - 1)
@@ -120,7 +127,8 @@ func current_player_orbit() -> int:
 
 func _process(delta: float) -> void:
 	camera.position = player.position
-	
+	fuel.value = fuel.value + 20 * delta
+
 	# Example Code:
 	#
 	# $DebugCanvas.debug_draw_line(player.position, $JupiterBackground.position)
