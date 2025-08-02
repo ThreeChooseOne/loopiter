@@ -30,6 +30,10 @@ const moon_orbit_indices = [0, 5, 10, 15, 20]
 const MIN_ORBIT_SPEED = 60
 const MAX_ORBIT_SPEED = 140
 
+# Moon positioning settings
+const MIN_MOON_DISTANCE = 0.15 # Minimum distance between moons (as fraction of orbit)
+const POSITION_RANDOMNESS = 0.08  # How much to randomly offset from even spacing
+
 func _ready() -> void:
 	# Add 21 orbits
 	var min_orbit_radius = 500
@@ -85,20 +89,65 @@ func populate_selected_orbits_with_moons():
 	print("Created ", all_moons.size(), " moons across ", moon_orbit_indices.size(), " orbits")
 
 func add_moons_to_orbit(orbit_index: int):
-	# Add multiple moons to a specific orbit at random positions
+	# Add multiple moons to a specific orbit with proper spacing
 	var orbit = orbits[orbit_index]
 	var orbit_speed = orbit_speeds[orbit_index]
+	
+	# Generate positions for all moons in this orbit
+	var moon_positions = generate_moon_positions(moons_per_orbit)
 	
 	for moon_index in range(moons_per_orbit):
 		var moon = create_moon(orbit_index, moon_index, orbit_speed)
 		orbit.add_child(moon)
 		all_moons.append(moon)
 		
-		# Position moon at random point on orbit
-		var random_progress = randf()
-		moon.progress_ratio = random_progress
+		# Use the calculated position
+		var moon_progress = moon_positions[moon_index]
+		moon.progress_ratio = moon_progress
 		
-		print("Created moon ", moon.name, " at progress ", random_progress, " on orbit ", orbit_index)
+		print("Created moon ", moon.name, " at progress ", "%.3f" % moon_progress, " with speed ", orbit_speed)
+
+func generate_moon_positions(num_moons: int) -> Array[float]:
+	# Generate well-spaced positions for moons on an orbit
+	var positions: Array[float] = []
+	
+	# Start with even spacing
+	for i in range(num_moons):
+		var base_position = float(i) / float(num_moons)
+		positions.append(base_position)
+	
+	# Add controlled randomness while maintaining minimum distance
+	for i in range(positions.size()):
+		var random_offset = randf_range(-POSITION_RANDOMNESS, POSITION_RANDOMNESS)
+		var new_position = positions[i] + random_offset
+		
+		# Wrap around the orbit (0.0 to 1.0)
+		new_position = fmod(new_position + 1.0, 1.0)
+		
+		# Check if this position is valid (far enough from other moons)
+		if is_position_valid(new_position, positions, i):
+			positions[i] = new_position
+		# If not valid, keep the original even spacing position
+	
+	return positions
+	
+func is_position_valid(test_position: float, existing_positions: Array[float], skip_index: int) -> bool:
+	# Check if a position is far enough from all other moons
+	for i in range(existing_positions.size()):
+		if i == skip_index:
+			continue  # Don't compare with self
+		
+		var distance = calculate_circular_distance(test_position, existing_positions[i])
+		if distance < MIN_MOON_DISTANCE:
+			return false
+	
+	return true
+	
+func calculate_circular_distance(pos1: float, pos2: float) -> float:
+	# Calculate the shortest distance between two positions on a circle
+	var direct_distance = abs(pos1 - pos2)
+	var wrap_distance = 1.0 - direct_distance
+	return min(direct_distance, wrap_distance)
 
 func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> OrbitingBody:
 	# Create and configure a single moon
