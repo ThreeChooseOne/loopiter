@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://3dw6xlotynkf"]
+[gd_scene load_steps=8 format=3 uid="uid://3dw6xlotynkf"]
 
 [ext_resource type="Script" uid="uid://dkwumx5aqm8c4" path="res://main.gd" id="1_ynt7j"]
 [ext_resource type="Texture2D" uid="uid://c8sn4xi564rph" path="res://assets/background/space-only.png" id="3_272bh"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bswv4joab5bvy" path="res://assets/background/jupiter-only.png" id="4_5vw27"]
 [ext_resource type="Texture2D" uid="uid://61ssauhjp5ex" path="res://assets/fuel.svg" id="4_7mycd"]
 [ext_resource type="Script" uid="uid://dn0poplegmhor" path="res://fuel_gauge.gd" id="5_7mycd"]
+[ext_resource type="Script" uid="uid://c5ix5kmmbuw24" path="res://debug_canvas.gd" id="7_272bh"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_ynt7j")
@@ -39,3 +40,6 @@ script = ExtResource("5_7mycd")
 [node name="JupiterBackground" type="Sprite2D" parent="."]
 scale = Vector2(3, 3)
 texture = ExtResource("4_5vw27")
+
+[node name="DebugCanvas" type="Node2D" parent="."]
+script = ExtResource("7_272bh")

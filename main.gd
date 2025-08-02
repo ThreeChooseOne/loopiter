@@ -121,6 +121,7 @@ func _process(delta: float) -> void:
 	#debug_line.default_color = Color.GREEN
 	#debug_line.width = 1
 	#add_child(debug_line)
+	$DebugCanvas.debug_draw_line(player.position, $JupiterBackground.position)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
@@ -135,3 +136,5 @@ func _input(event: InputEvent) -> void:
 				move_player_inner_orbit()
 			KEY_O:
 				move_player_outer_orbit()
+			KEY_V:
+				$DebugCanvas.toggle_viz()
