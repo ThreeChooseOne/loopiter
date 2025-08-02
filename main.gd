@@ -15,9 +15,12 @@ func _ready() -> void:
 	orbit.add_random_planet()
 	
 	# Add 5 orbits
+	var min_orbit_radius = 200
+	var max_orbit_radius = 300
+	
 	for n in 21:
 		# TODO: figure out the radius ranges
-		var orbit_radius = (n+1)*300.0
+		var orbit_radius = min_orbit_radius + (n/21.0)*(max_orbit_radius - min_orbit_radius)
 		var center = get_viewport_rect().size/2.0
 		var new_orbit = BaseOrbit.new(orbit_radius, center)
 		orbits.append(new_orbit)
@@ -27,12 +30,9 @@ func _ready() -> void:
 	moons.append(gen_moon)
 	orbits[0].add_child(gen_moon.get_follower())
 	
-	# TODO: Add more moons
-	
-	# TODO: Refactor this visualization code somewhere else
-	# debug_orbit = Line2D.new()
-	# debug_orbit.points = orbits[0].curve.get_baked_points()
-	# add_child(debug_orbit)
+	orbits[0].visualize_debug(true)
+	orbits[10].visualize_debug(true)
+	orbits[20].visualize_debug(true)
 	
 	$PlayerCamera.update_camera_position(Vector2(0,0))
 	
