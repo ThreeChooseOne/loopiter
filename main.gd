@@ -30,13 +30,19 @@ func _ready() -> void:
 	var gen_moon = OrbitingBody.new()
 	gen_moon.init_random_planet()
 	
-	# Set up collision layers (optional but recommend)
+	# Set up collision layers
 	gen_moon.set_collision_layer(2) # Moon layer
 	gen_moon.set_collision_mask(1) # Can collide with player layer
 	
+	# Set up research area layers
+	gen_moon.set_research_collision_layer(4) # Research area layer
+	gen_moon.set_research_collision_mask(1) # Can detect player layer
+
 	# Connect to collision signals
 	gen_moon.body_collided.connect(_on_moon_collision)
 	gen_moon.area_collided.connect(_on_moon_area_collision)
+	gen_moon.research_area_entered.connect(_on_moon_research_entered)
+	gen_moon.research_area_exited.connect(_on_moon_research_exited)
 	
 	orbits[0].add_child(gen_moon)
 	
@@ -54,7 +60,7 @@ func _ready() -> void:
 	# Set up player collision if it's also an OrbitingBody
 	if player is OrbitingBody:
 		player.set_collision_layer(1)  # Player layer
-		player.set_collision_mask(2)   # Can collide with moon layer
+		player.set_collision_mask(2 + 4)   # Can collide with moon layer (2) and research layer (4)
 		player.body_collided.connect(_on_player_collision)
 	
 	up_key_pressed.connect(player._on_up_pressed)
@@ -70,7 +76,8 @@ func _on_moon_collision(body):
 	# Check if it's the player
 	if body == player:
 		handle_player_moon_collision()
-		
+
+# TODO: Might not need this
 func _on_moon_area_collision(area):
 	print("Moon collided with area: ", area.name)
 	# Handle area-to-area collisions (like moon hitting another moon)
@@ -78,14 +85,15 @@ func _on_moon_area_collision(area):
 func _on_player_collision(body):
 	print("Player collided with: ", body.name)
 	
+# Research event handlers
+func _on_moon_research_entered(player_body):
+	print("MAIN: Player entered moon research range!")
+
+func _on_moon_research_exited(player_body):
+	print("MAIN: Player left moon research range!")
+
 func handle_player_moon_collision():
 	print("PLAYER HIT THE MOON!")
-	# Add your game logic here:
-	# - Reduce player health
-	# - Game over
-	# - Bounce effect
-	# - Screen shake
-	# - Sound effect
 
 func move_player_outer_orbit():
 	move_player_orbit(true)
