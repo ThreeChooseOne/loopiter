@@ -45,7 +45,7 @@ var reset_timer: Timer
 var player_in_research_range: bool = false
 var current_research_player: OrbitingBody = null
 const RESEARCH_INTERVAL: float = 5.0  # 5 seconds per research point
-const RESET_INTERVAL: float = 0.1 # 10 ms grace perioud to reenter research zone
+const RESET_INTERVAL: float = 0.1 # 100 ms grace perioud to reenter research zone
 
 func _init():
 	rotates = false
