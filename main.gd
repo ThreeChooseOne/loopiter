@@ -6,12 +6,16 @@ var orbits: Array[BaseOrbit] = []
 
 var moons: Array[OrbitingBody] = []
 
+var max_viewport_size: Vector2
+
 func _ready() -> void:
+	max_viewport_size = get_viewport_rect().size
+	
 	# Initialize orbit with a random planet
 	orbit.add_random_planet()
 	
 	# Add 5 orbits
-	for n in 5:
+	for n in 21:
 		# TODO: figure out the radius ranges
 		var orbit_radius = (n+1)*300.0
 		var center = get_viewport_rect().size/2.0
@@ -29,6 +33,8 @@ func _ready() -> void:
 	# debug_orbit = Line2D.new()
 	# debug_orbit.points = orbits[0].curve.get_baked_points()
 	# add_child(debug_orbit)
+	
+	$PlayerCamera.update_camera_position(Vector2(0,0))
 	
 func _process(delta: float) -> void:
 	# Should main be updating the orbits?
