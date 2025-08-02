@@ -4,12 +4,19 @@ signal enter_key_pressed
 
 var max_viewport_size: Vector2
 
+var ZOOM_MAX: Vector2 = 2.0 * Vector2.ONE
+var ZOOM_MIN: Vector2 = 1.0 * Vector2.ONE
+var ZOOM_SPD: Vector2 = 0.01 * Vector2.ONE
+
 func _ready() -> void:
 	max_viewport_size = get_viewport_rect().size
 	update_camera_position(Vector2(0,0))
 
 func _input(event: InputEvent):
-	handle_movement_input(event)
+	if handle_movement_input(event):
+		return
+	if handle_scroll_input(event):
+		return
 	
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_SPACE:  # Space key
@@ -22,18 +29,29 @@ func handle_movement_input(event: InputEvent) -> bool:
 	var movement_step: float = 50.0
 	
 	if event.pressed and event.keycode == KEY_UP:
-		update_camera_position(movement_step * Vector2(0, -1))
+		update_camera_position(movement_step * Vector2.UP)
 		return true
 	if event.pressed and event.keycode == KEY_DOWN:
-		update_camera_position(movement_step * Vector2(0, 1))
+		update_camera_position(movement_step * Vector2.DOWN)
 		return true
 	if event.pressed and event.keycode == KEY_LEFT:
-		update_camera_position(movement_step * Vector2(-1, 0))
+		update_camera_position(movement_step * Vector2.LEFT)
 		return true
 	if event.pressed and event.keycode == KEY_RIGHT:
-		update_camera_position(movement_step * Vector2(1, 0))
+		update_camera_position(movement_step * Vector2.RIGHT)
 		return true
 
+	return false
+
+func handle_scroll_input(event: InputEvent):
+	if event is not InputEventMouseButton:
+		return false
+	var emb = event as InputEventMouseButton
+	if emb.is_pressed():
+		if emb.button_index == MOUSE_BUTTON_WHEEL_UP:
+			zoom = ZOOM_MAX.min(zoom + ZOOM_SPD)
+		elif emb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			zoom = ZOOM_MIN.max(zoom - ZOOM_SPD)
 	return false
 	
 func update_camera_position(delta: Vector2):

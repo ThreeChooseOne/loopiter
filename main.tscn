@@ -38,5 +38,4 @@ curve = SubResource("Curve2D_a2kch")
 script = ExtResource("1_j4n3n")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
-zoom = Vector2(2, 2)
 script = ExtResource("9_kek77")
