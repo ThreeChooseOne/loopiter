@@ -4,6 +4,12 @@ var orbits: Array[BaseOrbit] = []
 const player_scene = preload("res://core/player.tscn")
 var player: OrbitingBody
 
+# Track all moons for signal management
+var all_moons: Array[OrbitingBody] = []
+
+# Store speed for each orbit that has moons
+var orbit_speeds: Dictionary = {}
+
 # Input signals
 signal enter_key_pressed
 signal up_key_pressed
@@ -15,6 +21,14 @@ signal down_key_pressed
 const fuel_cost = 20
 
 const num_orbits = 21
+const moons_per_orbit = 3
+
+# Define which orbits should have moons (same as debug visualization)
+const moon_orbit_indices = [0, 5, 10, 15, 20]
+
+# Speed range for orbits with moons
+const MIN_ORBIT_SPEED = 60
+const MAX_ORBIT_SPEED = 140
 
 func _ready() -> void:
 	# Add 21 orbits
@@ -28,26 +42,13 @@ func _ready() -> void:
 		var new_orbit = BaseOrbit.new(orbit_radius, center)
 		orbits.append(new_orbit)
 		add_child(new_orbit)
+		
 	
-	# Create a moon with collision detection
-	var gen_moon = OrbitingBody.new()
-	gen_moon.init_random_planet()
+	# Generate random speeds for moon orbits
+	generate_orbit_speeds()
 	
-	# Set up collision layers
-	gen_moon.set_collision_layer(2) # Moon layer
-	gen_moon.set_collision_mask(1) # Can collide with player layer
-	
-	# Set up research area layers
-	gen_moon.set_research_collision_layer(4) # Research area layer
-	gen_moon.set_research_collision_mask(1) # Can detect player layer
-
-	# Connect to collision signals
-	gen_moon.body_collided.connect(_on_moon_collision)
-	gen_moon.area_collided.connect(_on_moon_area_collision)
-	gen_moon.research_area_entered.connect(_on_moon_research_entered)
-	gen_moon.research_area_exited.connect(_on_moon_research_exited)
-	
-	orbits[0].add_child(gen_moon)
+	# Add moons only to specific orbits
+	populate_selected_orbits_with_moons()
 	
 	# Debug visualization
 	orbits[0].visualize_debug(true)
@@ -58,6 +59,7 @@ func _ready() -> void:
 	
 	# Create player
 	player = player_scene.instantiate()
+	player.name = "Player" # Important for collision detection
 	orbits[10].add_child(player)
 	
 	# Set up player collision if it's also an OrbitingBody
@@ -68,9 +70,61 @@ func _ready() -> void:
 	
 	up_key_pressed.connect(player._on_up_pressed)
 	down_key_pressed.connect(player._on_down_pressed)
+	
+func generate_orbit_speeds():
+	# Generate a random speed for each orbit that will have moons
+	for orbit_index in moon_orbit_indices:
+		var random_speed = randi_range(MIN_ORBIT_SPEED, MAX_ORBIT_SPEED)
+		orbit_speeds[orbit_index] = random_speed
+		print("Orbit ", orbit_index, " speed: ", random_speed)
 
-	# Hooks up signal to increment research meter
-	enter_key_pressed.connect(gen_moon._on_enter_pressed)
+func populate_selected_orbits_with_moons():
+	# Add moons only to the orbits with debug visualization
+	for orbit_index in moon_orbit_indices:
+		add_moons_to_orbit(orbit_index)
+	print("Created ", all_moons.size(), " moons across ", moon_orbit_indices.size(), " orbits")
+
+func add_moons_to_orbit(orbit_index: int):
+	# Add multiple moons to a specific orbit at random positions
+	var orbit = orbits[orbit_index]
+	var orbit_speed = orbit_speeds[orbit_index]
+	
+	for moon_index in range(moons_per_orbit):
+		var moon = create_moon(orbit_index, moon_index, orbit_speed)
+		orbit.add_child(moon)
+		all_moons.append(moon)
+		
+		# Position moon at random point on orbit
+		var random_progress = randf()
+		moon.progress_ratio = random_progress
+		
+		print("Created moon ", moon.name, " at progress ", random_progress, " on orbit ", orbit_index)
+
+func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> OrbitingBody:
+	# Create and configure a single moon
+	var moon = OrbitingBody.new()
+	moon.name = "Moon_" + str(orbit_index) + "_" + str(moon_index)
+	moon.init_random_planet()
+	
+	# Set the moon's speed to match its orbit
+	moon.speed = orbit_speed
+	
+	# Set up collision layers
+	moon.set_collision_layer(2) # Moon layer
+	moon.set_collision_mask(1) # Can collide with player layer
+	
+	# Set up research area layers
+	moon.set_research_collision_layer(4) # Research area layer
+	moon.set_research_collision_mask(1) # Can detect player layer
+	
+	# Connect collision signals
+	moon.body_collided.connect(_on_moon_collision)
+	moon.area_collided.connect(_on_moon_area_collision)
+	moon.research_area_entered.connect(_on_moon_research_entered)
+	moon.research_area_exited.connect(_on_moon_research_exited)
+	
+	return moon
+
 
 # Collision event handlers
 func _on_moon_collision(body):
@@ -151,3 +205,34 @@ func _input(event: InputEvent) -> void:
 				move_player_outer_orbit()
 			KEY_V:
 				$DebugCanvas.toggle_viz()
+
+
+# Helper functions for debugging/management
+func get_moons_in_orbit(orbit_index: int) -> Array[OrbitingBody]:
+	# Get all moons in a specific orbit
+	var moons_in_orbit: Array[OrbitingBody] = []
+	if orbit_index < orbits.size():
+		for child in orbits[orbit_index].get_children():
+			if child is OrbitingBody and child != player:
+				moons_in_orbit.append(child)
+	return moons_in_orbit
+
+func get_total_moon_count() -> int:
+	# Get total number of moons in the game
+	return all_moons.size()
+
+func get_completed_research_count() -> int:
+	# Get number of moons with completed research
+	var completed = 0
+	for moon in all_moons:
+		if moon.research.value >= moon.research.max_value:
+			completed += 1
+	return completed
+
+func is_orbit_with_moons(orbit_index: int) -> bool:
+	# Check if an orbit has moons
+	return orbit_index in moon_orbit_indices
+
+func get_orbit_speed(orbit_index: int) -> int:
+	# Get the speed for a specific orbit
+	return orbit_speeds.get(orbit_index, 0)  # Default to 0 if not found
