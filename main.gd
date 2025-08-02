@@ -112,16 +112,13 @@ func current_player_orbit() -> int:
 
 func _process(delta: float) -> void:
 	camera.position = player.position
-	#if debug_line != null:
-		#remove_child(debug_line)
-		#debug_line.free()
-	#debug_line = Line2D.new()
-	#debug_line.add_point(camera.position)
-	#debug_line.add_point($Jupiter.position)
-	#debug_line.default_color = Color.GREEN
-	#debug_line.width = 1
-	#add_child(debug_line)
-	$DebugCanvas.debug_draw_line(player.position, $JupiterBackground.position)
+	
+	# Example Code:
+	#
+	# $DebugCanvas.debug_draw_line(player.position, $JupiterBackground.position)
+	# $DebugCanvas.debug_draw_circ(player.position, 150)
+	# var f = 50*Vector2.ONE
+	# $DebugCanvas.debug_draw_rect(player.position-f, player.position+f)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
