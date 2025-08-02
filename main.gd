@@ -5,7 +5,10 @@ var max_viewport_size: Vector2
 const player_scene = preload("res://core/player.tscn")
 var player: OrbitingBody
 
+# Input signals
 signal enter_key_pressed
+signal up_key_pressed
+signal down_key_pressed
 
 @onready var camera = %PlayerCamera
 
@@ -32,11 +35,15 @@ func _ready() -> void:
 	orbits[0].add_child(gen_moon)
 	
 	orbits[0].visualize_debug(true)
+	orbits[5].visualize_debug(true)
 	orbits[10].visualize_debug(true)
+	orbits[15].visualize_debug(true)
 	orbits[20].visualize_debug(true)
 	
 	player = player_scene.instantiate()
 	orbits[10].add_child(player)
+	up_key_pressed.connect(player._on_up_pressed)
+	down_key_pressed.connect(player._on_down_pressed)
 
 	# Hooks up signal to increment research meter
 	enter_key_pressed.connect(gen_moon._on_enter_pressed)
@@ -52,5 +59,10 @@ func _process(delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_SPACE:
-			enter_key_pressed.emit()
+		match event.keycode:
+			KEY_SPACE:
+				enter_key_pressed.emit()
+			KEY_UP:
+				up_key_pressed.emit()
+			KEY_DOWN:
+				down_key_pressed.emit()
