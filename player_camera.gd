@@ -55,6 +55,7 @@ func handle_scroll_input(event: InputEvent):
 			zoom = ZOOM_MAX.min(zoom + ZOOM_SPD)
 		elif emb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			zoom = ZOOM_MIN.max(zoom - ZOOM_SPD)
+	update_camera_position(Vector2.ZERO)
 	return false
 	
 func update_camera_position(delta: Vector2):
