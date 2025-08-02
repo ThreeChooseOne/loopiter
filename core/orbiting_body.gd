@@ -11,7 +11,7 @@ signal research_area_exited(body)
 @export var MIN_SPEED: int = 50
 
 @export var planet_size: Vector2 = Vector2(75.0, 75.0)
-@export var research_range_multiplier: float = 2.0  # How much bigger research area is
+@export var research_range_multiplier: float = 3.0  # How much bigger research area is
 
 
 # TODO: repeated code, move both copies somewhere else
@@ -26,6 +26,7 @@ var planets = [
 	preload("res://assets/planets/planet08.png"),
 	preload("res://assets/planets/planet09.png"),
 ]
+var range_texture = preload("res://assets/light5.png")
 
 var research: TextureProgressBar
 var research_area: Area2D
@@ -82,6 +83,16 @@ func init_random_planet() -> void:
 	research_shape.shape = research_circle
 	research_area.add_child(research_shape)
 	
+	# Create range indicator sprite
+	var range = Sprite2D.new()
+	range.texture = range_texture
+	var circle_size = planet_sprite.texture.get_size()
+	var scale = Vector2(research_circle.radius*2 / circle_size.x, research_circle.radius*2 / circle_size.y)
+	range.scale = scale
+	range.modulate.a = 0.1
+	range.z_index = -1
+	research_area.add_child(range)
+
 	# Set up collision detection
 	setup_collision_detection()
 	
