@@ -10,6 +10,7 @@ func _ready() -> void:
 	# Initialize orbit with a random planet
 	orbit.add_random_planet()
 	
+	
 	# Add 5 orbits
 	for n in 5:
 		# TODO: figure out the radius ranges
@@ -22,6 +23,9 @@ func _ready() -> void:
 	var gen_moon = OrbitingBody.new() # creates a random asset for it
 	moons.append(gen_moon)
 	orbits[0].add_child(gen_moon.get_follower())
+	
+	# Hooks up signal to increment research meter
+	$PlayerCamera.enter_key_pressed.connect(gen_moon._on_enter_pressed)
 	
 	# TODO: Add more moons
 	
