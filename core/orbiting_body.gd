@@ -1,6 +1,9 @@
 class_name OrbitingBody extends PathFollow2D
 
+
 @export var speed: int = 100
+@export var MAX_SPEED: int = 300
+@export var MIN_SPEED: int = 50
 
 @export var planet_size: Vector2 = Vector2(75.0, 75.0)
 
@@ -41,6 +44,14 @@ func init_random_planet() -> void:
 	research.step = 1
 	research.value = 0
 	add_child(research)
+	
+func _on_up_pressed():
+	speed += 20
+	speed = clamp(speed, MIN_SPEED, MAX_SPEED)
+	
+func _on_down_pressed():
+	speed -= 20
+	speed = clamp(speed, MIN_SPEED, MAX_SPEED)
 
 func _on_enter_pressed():
 	increment_research()
