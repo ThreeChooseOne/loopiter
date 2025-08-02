@@ -2,6 +2,8 @@ extends Camera2D
 
 signal enter_key_pressed
 
+signal camera_zoom_changed
+
 var max_viewport_size: Vector2
 
 var ZOOM_MAX: Vector2 = 2.0 * Vector2.ONE
@@ -16,6 +18,7 @@ func _input(event: InputEvent):
 	if handle_movement_input(event):
 		return
 	if handle_scroll_input(event):
+		camera_zoom_changed.emit(zoom)
 		return
 	
 	if event is InputEventKey and event.pressed:
