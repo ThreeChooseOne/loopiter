@@ -88,8 +88,6 @@ func init_random_planet() -> void:
 	range_idicator = Sprite2D.new()
 	range_idicator.texture = range_texture
 	var circle_size = range_idicator.texture.get_size()
-	print(circle_size)
-	print(research_circle.radius)
 	var scale = Vector2(research_circle.radius*2, research_circle.radius*2) / circle_size
 	range_idicator.scale = scale
 	range_idicator.modulate = Color(0.8, 0.8, 0.8, 0.1)
