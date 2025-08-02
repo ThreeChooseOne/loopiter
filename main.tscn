@@ -14,7 +14,7 @@ script = ExtResource("1_ynt7j")
 
 [node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
 motion_scale = Vector2(0.1, 0.1)
-motion_offset = Vector2(-120, -100)
+motion_offset = Vector2(-160, -140)
 
 [node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer"]
 scale = Vector2(2, 2)
