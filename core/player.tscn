@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://dywblgg6a1vs4"]
+
+[ext_resource type="Script" uid="uid://jyfubykokonk" path="res://core/orbiting_body.gd" id="1_3x74s"]
+[ext_resource type="Texture2D" uid="uid://r3qtpiwsrdmm" path="res://assets/spaceBuilding_023.png" id="2_ptdtg"]
+
+[node name="Player" type="PathFollow2D"]
+script = ExtResource("1_3x74s")
+metadata/_custom_type_script = "uid://jyfubykokonk"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_ptdtg")
