@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="loopiter"
-run/main_scene="res://main.tscn"
+run/main_scene="uid://dpn5blbx4huff"
 config/features=PackedStringArray("4.4", "Forward Plus")
 
 [display]
@@ -19,6 +19,10 @@ config/features=PackedStringArray("4.4", "Forward Plus")
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="viewport"
+
+[gui]
+
+theme/custom="uid://ckwnik6wg05q3"
 
 [input]
 
