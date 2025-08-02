@@ -14,6 +14,7 @@ func _ready() -> void:
 	# Initialize orbit with a random planet
 	orbit.add_random_planet()
 	
+	
 	# Add 5 orbits
 	var min_orbit_radius = 200
 	var max_orbit_radius = 300
@@ -33,7 +34,10 @@ func _ready() -> void:
 	orbits[0].visualize_debug(true)
 	orbits[10].visualize_debug(true)
 	orbits[20].visualize_debug(true)
-	
+
+	# Hooks up signal to increment research meter
+	$PlayerCamera.enter_key_pressed.connect(gen_moon._on_enter_pressed)
+
 	$PlayerCamera.update_camera_position(Vector2(0,0))
 	
 func _process(delta: float) -> void:
