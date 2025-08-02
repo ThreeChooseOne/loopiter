@@ -36,6 +36,7 @@ var collision_area: Area2D
 var collision_shape: CollisionShape2D
 
 var planet_sprite: Sprite2D
+var range_idicator: Sprite2D
 
 
 # Research collection system
@@ -84,14 +85,14 @@ func init_random_planet() -> void:
 	research_area.add_child(research_shape)
 	
 	# Create range indicator sprite
-	var range = Sprite2D.new()
-	range.texture = range_texture
-	var circle_size = planet_sprite.texture.get_size()
-	var scale = Vector2(research_circle.radius*2 / circle_size.x, research_circle.radius*2 / circle_size.y)
-	range.scale = scale
-	range.modulate.a = 0.1
-	range.z_index = -1
-	research_area.add_child(range)
+	range_idicator = Sprite2D.new()
+	range_idicator.texture = range_texture
+	var circle_size = range_idicator.texture.get_size()
+	var scale = Vector2(research_circle.radius*2, research_circle.radius*2) / circle_size
+	range_idicator.scale = scale
+	range_idicator.modulate = Color(0.8, 0.8, 0.8, 0.1)
+	range_idicator.z_index = -1
+	research_area.add_child(range_idicator)
 
 	# Set up collision detection
 	setup_collision_detection()
@@ -160,6 +161,7 @@ func _on_research_area_entered(area):
 		player_in_research_range = true
 		start_research_collection()
 		research_area_entered.emit(potential_player)
+		range_idicator.modulate = Color(1, 1, 1, 0.2)
 	
 func _on_research_area_exited(area):
 	# Check if it's the player leaving
@@ -170,6 +172,7 @@ func _on_research_area_exited(area):
 		current_research_player = null
 		stop_research_collection()
 		research_area_exited.emit(potential_player)
+		range_idicator.modulate = Color(0.8, 0.8, 0.8, 0.1)
 		
 func start_research_collection():
 	if research.value < research.max_value:
@@ -207,6 +210,17 @@ func _on_down_pressed():
 
 func _process(delta: float) -> void:
 	progress += speed * delta
+	
+	if research_timer:
+		queue_redraw()
+
+func _draw() -> void:
+	if research_timer and !research_timer.is_stopped():
+		var planet_radius = planet_size.x/2.0
+		var research_max_radius = planet_radius * research_range_multiplier
+		var ratio = research_timer.time_left / RESEARCH_INTERVAL
+		var radius = lerp(planet_radius, research_max_radius, ratio)
+		draw_circle(Vector2.ZERO, radius, Color.GHOST_WHITE, false, 1.0)
 	
 # Helper methods for external access
 func get_collision_area() -> Area2D:
