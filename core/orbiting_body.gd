@@ -213,6 +213,17 @@ func _on_down_pressed():
 func _process(delta: float) -> void:
 	progress += speed * delta
 	
+	if research_timer:
+		queue_redraw()
+
+func _draw() -> void:
+	if research_timer and !research_timer.is_stopped():
+		var planet_radius = planet_size.x/2.0
+		var research_max_radius = planet_radius * research_range_multiplier
+		var ratio = research_timer.time_left / RESEARCH_INTERVAL
+		var radius = lerp(planet_radius, research_max_radius, ratio)
+		draw_circle(Vector2.ZERO, radius, Color.GHOST_WHITE, false, 1.0)
+	
 # Helper methods for external access
 func get_collision_area() -> Area2D:
 	return collision_area
