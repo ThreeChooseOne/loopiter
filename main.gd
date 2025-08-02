@@ -42,3 +42,5 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	camera.position = player.position
+	var player_angle = player.progress_ratio * TAU
+	camera.rotation = player_angle + PI # Add PI to flip camera 180 degrees
