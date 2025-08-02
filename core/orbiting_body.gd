@@ -8,7 +8,6 @@ signal area_collided(area)
 @export var MAX_SPEED: int = 300
 @export var MIN_SPEED: int = 50
 
-@export var speed: int = 100
 @export var planet_size: Vector2 = Vector2(75.0, 75.0)
 
 # TODO: repeated code, move both copies somewhere else

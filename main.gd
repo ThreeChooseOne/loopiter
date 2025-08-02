@@ -1,7 +1,6 @@
 extends Node2D
 
 var orbits: Array[BaseOrbit] = []
-var max_viewport_size: Vector2
 const player_scene = preload("res://core/player.tscn")
 var player: OrbitingBody
 
@@ -15,18 +14,14 @@ signal down_key_pressed
 const num_orbits = 21
 
 func _ready() -> void:
-	max_viewport_size = get_viewport_rect().size
-	$SpaceBackground.size = max_viewport_size
-	$JupiterBG_Container.size = max_viewport_size
-	
 	# Add 21 orbits
 	var min_orbit_radius = 500
 	var max_orbit_radius = 1000
 	
 	for n in num_orbits:
 		# TODO: figure out the radius ranges
+		var center = Vector2.ZERO
 		var orbit_radius = min_orbit_radius + (n/float(num_orbits))*(max_orbit_radius - min_orbit_radius)
-		var center = get_viewport_rect().size/2.0
 		var new_orbit = BaseOrbit.new(orbit_radius, center)
 		orbits.append(new_orbit)
 		add_child(new_orbit)
@@ -117,11 +112,15 @@ func current_player_orbit() -> int:
 
 func _process(delta: float) -> void:
 	camera.position = player.position
-	var player_angle = player.progress_ratio * TAU
-	# Add PI to flip camera 180 degrees
-	camera.rotation = player_angle + PI
-	# Move the camera 100 units "up" relative to the camera's perspective (transform)
-	camera.position += camera.transform.y.normalized() * -100
+	#if debug_line != null:
+		#remove_child(debug_line)
+		#debug_line.free()
+	#debug_line = Line2D.new()
+	#debug_line.add_point(camera.position)
+	#debug_line.add_point($Jupiter.position)
+	#debug_line.default_color = Color.GREEN
+	#debug_line.width = 1
+	#add_child(debug_line)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
