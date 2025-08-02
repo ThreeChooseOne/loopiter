@@ -5,6 +5,8 @@ var max_viewport_size: Vector2
 const player_scene = preload("res://core/player.tscn")
 var player: OrbitingBody
 
+signal enter_key_pressed
+
 @onready var camera = %PlayerCamera
 
 func _ready() -> void:
@@ -14,8 +16,8 @@ func _ready() -> void:
 	$JupiterBG_Container.size = max_viewport_size
 	
 	# Add 5 orbits
-	var min_orbit_radius = 200
-	var max_orbit_radius = min(max_viewport_size.x, max_viewport_size.y)/2.2
+	var min_orbit_radius = 500
+	var max_orbit_radius = 1000
 	
 	for n in 21:
 		# TODO: figure out the radius ranges
@@ -37,10 +39,18 @@ func _ready() -> void:
 	orbits[10].add_child(player)
 
 	# Hooks up signal to increment research meter
-	$PlayerCamera.enter_key_pressed.connect(gen_moon._on_enter_pressed)
+	enter_key_pressed.connect(gen_moon._on_enter_pressed)
 
 
 func _process(delta: float) -> void:
 	camera.position = player.position
 	var player_angle = player.progress_ratio * TAU
-	camera.rotation = player_angle + PI # Add PI to flip camera 180 degrees
+	# Add PI to flip camera 180 degrees
+	camera.rotation = player_angle + PI
+	# Move the camera 100 units "up" relative to the camera's perspective (transform)
+	camera.position += camera.transform.y.normalized() * -100
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_SPACE:
+			enter_key_pressed.emit()
