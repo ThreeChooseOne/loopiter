@@ -1,19 +1,11 @@
 extends Node2D
 
-@onready var orbit: Path2D = %Orbit
-
 var orbits: Array[BaseOrbit] = []
-
 var moons: Array[OrbitingBody] = []
-
 var max_viewport_size: Vector2
 
 func _ready() -> void:
 	max_viewport_size = get_viewport_rect().size
-	
-	# Initialize orbit with a random planet
-	orbit.add_random_planet()
-	
 	
 	# Add 5 orbits
 	var min_orbit_radius = 200
