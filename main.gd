@@ -327,7 +327,8 @@ func update_hud_timer() -> void:
 	var time_left_secs = $GameOverTimer.time_left
 	var minutes = int(time_left_secs / 60)
 	var seconds: int = time_left_secs - (minutes*60)
-	$PlayerCamera/PlayerHUD/Timer.text = "%s:%02d" % [str(minutes), seconds]
+	%Timer.text = "%s:%02d" % [str(minutes), seconds]
+	%Speed.text = "%03d" % player.speed
 
 func _process(delta: float) -> void:
 	camera.position = player.position
