@@ -15,6 +15,9 @@ var completed_research_count: int = 0
 var habitable_moon_found: bool = false
 var habitable_moon: OrbitingBody = null
 
+var num_loops_around: int = 0
+var last_progress: float = 0.0
+
 signal change_player_speed(accelerate: bool)
 
 signal goto_main_menu
@@ -339,6 +342,12 @@ func _process(delta: float) -> void:
 	camera.position = player.position
 	fuel.value = fuel.value + 20 * delta
 	update_hud_timer()
+	var curr_progress = player.progress_ratio
+	if curr_progress < last_progress:
+		num_loops_around += 1
+	last_progress = player.progress_ratio
+	%Loops.text = "Loops: %d" % num_loops_around
+	
 
 	# Example Code:
 	#

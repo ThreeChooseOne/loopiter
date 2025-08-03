@@ -165,6 +165,14 @@ theme = ExtResource("7_5vw27")
 text = "5:00"
 horizontal_alignment = 1
 
+[node name="Loops" type="Label" parent="PlayerCamera"]
+unique_name_in_owner = true
+offset_left = -350.0
+offset_top = 180.0
+offset_right = -259.0
+offset_bottom = 198.0
+text = "Loops: 0"
+
 [node name="Panel" type="PanelContainer" parent="PlayerCamera"]
 unique_name_in_owner = true
 visible = false
