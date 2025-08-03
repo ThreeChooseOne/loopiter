@@ -1,6 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://dpn5blbx4huff"]
+[gd_scene load_steps=3 format=3 uid="uid://dpn5blbx4huff"]
 
 [ext_resource type="Script" uid="uid://dy1x347yihpg0" path="res://root_scene.gd" id="1_itajj"]
+[ext_resource type="AudioStream" uid="uid://21qwhdrlwuv6" path="res://assets/StraussII-Blue_Danube_Waltz.ogg" id="2_c77vg"]
 
 [node name="RootScene" type="Node2D"]
 script = ExtResource("1_itajj")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_c77vg")
+autoplay = true
+parameters/looping = true
