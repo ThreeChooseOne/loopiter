@@ -243,6 +243,15 @@ text = "Retry"
 
 [node name="HaloMask" parent="PlayerCamera" instance=ExtResource("7_kek77")]
 
+[node name="ResearchedMoons" type="RichTextLabel" parent="PlayerCamera"]
+unique_name_in_owner = true
+offset_left = -372.0
+offset_top = -205.0
+offset_right = -172.0
+offset_bottom = -169.0
+text = "Moons Researched RichTextBox"
+fit_content = true
+
 [node name="DebugCanvas" type="Node2D" parent="."]
 script = ExtResource("7_272bh")
 
