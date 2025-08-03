@@ -5,6 +5,8 @@ signal body_collided(body)
 signal area_collided(area)
 signal research_area_entered(body)
 signal research_area_exited(body)
+signal research_completed(moon: OrbitingBody)
+signal player_crashed
 
 @export var speed: int = 100
 @export var MAX_SPEED: int = 300
@@ -12,7 +14,8 @@ signal research_area_exited(body)
 
 @export var planet_size: Vector2 = Vector2(75.0, 75.0)
 @export var research_range_multiplier: float = 3.0  # How much bigger research area is
-
+var is_research_complete: bool = false
+var is_habitable: bool = false
 
 # TODO: repeated code, move both copies somewhere else
 var planets = [
@@ -140,20 +143,25 @@ func setup_research_system():
 
 # Direct collision event handlers
 func _on_body_entered(body):
-	print("Planet collision with body: ", body.name)
+	print("Moon collision with body: ", body.name)
 	body_collided.emit(body)
 	
 func _on_body_exited(body):
-	print("Planet stopped colliding with body: ", body.name)
+	print("Moon stopped colliding with body: ", body.name)
 	
 func _on_area_entered(area):
-	print("Planet collision with area: ", area.name)
+	print("Moon collision with area: ", area.name)
 	area_collided.emit(area)
 	
 	# Check if it's another OrbitingBody
 	var other_orbiting_body = area.get_parent()
 	if other_orbiting_body is OrbitingBody:
-		handle_planet_collision(other_orbiting_body)
+		# Check if it's the player crashing into this moon
+		if other_orbiting_body.name == "Player":
+			print("Player crashed into moon!")
+			player_crashed.emit()
+		else:
+			handle_satellite_moon_collision(other_orbiting_body)
 		
 func _on_area_exited(area):
 	print("Planet stopped colliding with area: ", area.name)
@@ -205,14 +213,27 @@ func _on_research_timer_timeout():
 		# Check if research is complete
 		if research.value >= research.max_value:
 			print("Research complete for this moon!")
-			stop_research_collection()
+			complete_research()
 		else:
 			# Continue collecting if player still in range
 			research_timer.start()
+
+func complete_research():
+	if not is_research_complete:
+		is_research_complete = true
+		stop_research_collection()
+		research_completed.emit(self)  # Emit the signal
+		print("Moon ", name, " research completed - signal emitted")
+		
+func make_habitable():
+	is_habitable = true
+	print("Moon ", name, " is now marked as HABITABLE!")
+
+	if planet_sprite:
+		planet_sprite.modulate = Color.GREEN
 	
-# TODO: Might just remove this? I don't think we need it
-func handle_planet_collision(other_planet: OrbitingBody):
-	print("Two planets collided!")
+func handle_satellite_moon_collision(other_planet: OrbitingBody):
+	print("Collided with moon!")
 	
 func _on_up_pressed():
 	speed += 20
