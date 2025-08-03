@@ -10,10 +10,16 @@ var all_moons: Array[OrbitingBody] = []
 # Store speed for each orbit that has moons
 var orbit_speeds: Dictionary = {}
 
+# Habitable Moon System
+var completed_research_count: int = 0
+var habitable_moon_found: bool = false
+var habitable_moon: OrbitingBody = null
+
 # Input signals
 signal up_key_pressed
 signal down_key_pressed
 signal game_over_timeout
+signal habitable_moon_discovered(moon: OrbitingBody)
 
 @onready var camera = %PlayerCamera
 @onready var fuel = %Fuel
@@ -34,6 +40,11 @@ const MAX_ORBIT_SPEED = 140
 const MIN_MOON_DISTANCE = 0.15 # Minimum distance between moons (as fraction of orbit)
 const POSITION_RANDOMNESS = 0.08  # How much to randomly offset from even spacing
 const MIN_DISTANCE_FROM_PLAYER = 0.25  # Keep moons at least 25% away from player on orbit 10
+
+# Habitable Moon settings
+const TOTAL_MOONS = 15
+
+const HABITABLE_CHANCE_PER_COMPLETION = 100.0 / TOTAL_MOONS  # 6.67% per completion
 
 func _ready() -> void:
 	# Add 21 orbits
@@ -75,6 +86,11 @@ func _ready() -> void:
 	
 	up_key_pressed.connect(player._on_up_pressed)
 	down_key_pressed.connect(player._on_down_pressed)
+	
+	# Connect to habitable moon discovery
+	habitable_moon_discovered.connect(_on_habitable_moon_discovered)
+	
+	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
 	
 func setup_gameover_view() -> void:
 	%Panel.visible = true
@@ -209,11 +225,47 @@ func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> Orbitin
 	
 	# Connect collision signals
 	moon.body_collided.connect(_on_moon_collision)
+	moon.player_crashed.connect(setup_gameover_view)
+	
 	moon.research_area_entered.connect(_on_moon_research_entered)
 	moon.research_area_exited.connect(_on_moon_research_exited)
+	moon.research_completed.connect(_on_moon_research_completed)
 	
 	return moon
 
+
+# Habitable Moon System
+func _on_moon_research_completed(moon: OrbitingBody):
+	completed_research_count += 1
+	print("Research completed on ", moon.name, " (", completed_research_count, "/", TOTAL_MOONS, ")")
+	
+	# Don't check for habitability if we already found one
+	if habitable_moon_found:
+		return
+	
+	# Calculate current probability
+	var current_probability = completed_research_count * HABITABLE_CHANCE_PER_COMPLETION
+	current_probability = min(current_probability, 100.0)  # Cap at 100%
+	
+	print("Checking habitability - ", "%.1f" % current_probability, "% chance")
+	
+	# Roll for habitability
+	var roll = randf() * 100.0
+	if roll <= current_probability:
+		# This moon is habitable!
+		moon.make_habitable()
+		habitable_moon_found = true
+		habitable_moon = moon
+		habitable_moon_discovered.emit(moon)
+		print("🎉 HABITABLE MOON DISCOVERED! ", moon.name, " is habitable!")
+	else:
+		print("Moon ", moon.name, " is not habitable (rolled ", "%.1f" % roll, ")")
+
+func _on_habitable_moon_discovered(moon: OrbitingBody):
+	print("GAME WON! Player discovered habitable moon: ", moon.name)
+	# Add win condition logic here
+	# setup_win_view() or similar
+	setup_gameover_view()
 
 # Collision event handlers
 func _on_moon_collision(body):
@@ -277,47 +329,16 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
-			KEY_UP:
+			KEY_UP, KEY_W:
 				up_key_pressed.emit()
-			KEY_DOWN:
+			KEY_DOWN, KEY_S:
 				down_key_pressed.emit()
-			KEY_I:
+			KEY_I, KEY_A:
 				move_player_inner_orbit()
-			KEY_O:
+			KEY_O, KEY_D:
 				move_player_outer_orbit()
 			KEY_V:
 				$DebugCanvas.toggle_viz()
-
-
-# Helper functions for debugging/management
-func get_moons_in_orbit(orbit_index: int) -> Array[OrbitingBody]:
-	# Get all moons in a specific orbit
-	var moons_in_orbit: Array[OrbitingBody] = []
-	if orbit_index < orbits.size():
-		for child in orbits[orbit_index].get_children():
-			if child is OrbitingBody and child != player:
-				moons_in_orbit.append(child)
-	return moons_in_orbit
-
-func get_total_moon_count() -> int:
-	# Get total number of moons in the game
-	return all_moons.size()
-
-func get_completed_research_count() -> int:
-	# Get number of moons with completed research
-	var completed = 0
-	for moon in all_moons:
-		if moon.research.value >= moon.research.max_value:
-			completed += 1
-	return completed
-
-func is_orbit_with_moons(orbit_index: int) -> bool:
-	# Check if an orbit has moons
-	return orbit_index in moon_orbit_indices
-
-func get_orbit_speed(orbit_index: int) -> int:
-	# Get the speed for a specific orbit
-	return orbit_speeds.get(orbit_index, 0)  # Default to 0 if not found
 
 
 func _on_game_over_timer_timeout() -> void:
