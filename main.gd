@@ -371,7 +371,7 @@ func _process(delta: float) -> void:
 	if curr_progress < last_progress:
 		num_loops_around += 1
 	last_progress = player.progress_ratio
-	%Loops.text = "Loops: %d" % num_loops_around
+	%Loops.text = "Lives: %d" % num_loops_around
 	
 
 	# Example Code:
