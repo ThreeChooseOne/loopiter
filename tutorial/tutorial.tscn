@@ -76,9 +76,9 @@ alignment = 1
 layout_mode = 2
 theme_override_constants/line_separation = 10
 theme_override_font_sizes/normal_font_size = 32
-text = "Earth is doomed! Your goal is to find the one habitable moon of Jupiter from the dozens of potential candidates. 
+text = "Earth is doomed! Your goal is to find one habitable moon of Jupiter from the dozens of potential candidates. 
 
-Stay close to moons to complete research and find the correct moon before it's too late!"
+Stay close to moons without crashing to advance research and find the correct moon before it's too late!"
 fit_content = true
 
 [node name="CenterContainer" type="MarginContainer" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer"]
