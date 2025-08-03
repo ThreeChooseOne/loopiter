@@ -21,6 +21,7 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if drawline:
 		remove_child(drawline)
+		drawline.queue_free()
 	var line = Line2D.new()
 	line.points = viz_orbit.curve.get_baked_points()
 	line.default_color = Color.YELLOW
@@ -31,6 +32,9 @@ func _draw() -> void:
 
 func add_orbit_viz(orbit: BaseOrbit) -> void:
 	viz_orbit = orbit
+	if drawline:
+		remove_child(drawline)
+		drawline.queue_free()
 	queue_redraw()
 
 func _on_radar_timer_timeout() -> void:
