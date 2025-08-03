@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cko1c37bawhm0" path="res://assets/tank.svg" id="3_lquwl"]
 [ext_resource type="Texture2D" uid="uid://bswv4joab5bvy" path="res://assets/background/jupiter-only.png" id="4_5vw27"]
 [ext_resource type="Texture2D" uid="uid://61ssauhjp5ex" path="res://assets/fuel.svg" id="4_7mycd"]
-[ext_resource type="Script" path="res://debug_canvas.gd" id="7_272bh"]
+[ext_resource type="Script" uid="uid://c5ix5kmmbuw24" path="res://debug_canvas.gd" id="7_272bh"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_ynt7j")
@@ -43,3 +43,10 @@ texture_progress = ExtResource("4_7mycd")
 
 [node name="DebugCanvas" type="Node2D" parent="."]
 script = ExtResource("7_272bh")
+
+[node name="GameOverTimer" type="Timer" parent="."]
+wait_time = 300.0
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="GameOverTimer" to="." method="_on_game_over_timer_timeout"]

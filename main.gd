@@ -13,6 +13,7 @@ var orbit_speeds: Dictionary = {}
 # Input signals
 signal up_key_pressed
 signal down_key_pressed
+signal game_over_timeout
 
 @onready var camera = %PlayerCamera
 @onready var fuel = %Fuel
@@ -74,6 +75,8 @@ func _ready() -> void:
 	
 	up_key_pressed.connect(player._on_up_pressed)
 	down_key_pressed.connect(player._on_down_pressed)
+	
+	print('main ready1')
 	
 func generate_orbit_speeds():
 	# Generate a random speed for each orbit that will have moons
@@ -314,3 +317,7 @@ func is_orbit_with_moons(orbit_index: int) -> bool:
 func get_orbit_speed(orbit_index: int) -> int:
 	# Get the speed for a specific orbit
 	return orbit_speeds.get(orbit_index, 0)  # Default to 0 if not found
+
+
+func _on_game_over_timer_timeout() -> void:
+	game_over_timeout.emit()
