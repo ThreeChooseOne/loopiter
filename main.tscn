@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://3dw6xlotynkf"]
+[gd_scene load_steps=14 format=3 uid="uid://3dw6xlotynkf"]
 
 [ext_resource type="Script" uid="uid://dkwumx5aqm8c4" path="res://main.gd" id="1_ynt7j"]
 [ext_resource type="Texture2D" uid="uid://c8sn4xi564rph" path="res://assets/background/space-only.png" id="3_272bh"]
@@ -11,8 +11,40 @@
 [ext_resource type="Script" path="res://debug_canvas.gd" id="7_272bh"]
 [ext_resource type="PackedScene" uid="uid://ier84j4eh2qc" path="res://jazz/circular_halo_mask.tscn" id="7_kek77"]
 
+[sub_resource type="Animation" id="Animation_dg77c"]
+resource_name = "blink_red"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:tint_over")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(0.960784, 0.286275, 0.152941, 0.729412), Color(1, 1, 1, 0), Color(0.960784, 0.286275, 0.152941, 0.717647), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_4c57u"]
+length = 0.001
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ycdy4"]
+_data = {
+&"RESET": SubResource("Animation_4c57u"),
+&"blink_red": SubResource("Animation_dg77c")
+}
+
 [node name="Main" type="Node2D"]
 script = ExtResource("1_ynt7j")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+root_node = NodePath("../PlayerCamera/PlayerHUD/Fuel")
+libraries = {
+&"": SubResource("AnimationLibrary_ycdy4")
+}
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
 
@@ -86,7 +118,9 @@ stretch_margin_top = 6
 stretch_margin_right = 12
 stretch_margin_bottom = 6
 texture_under = ExtResource("3_lquwl")
+texture_over = ExtResource("3_lquwl")
 texture_progress = ExtResource("4_7mycd")
+tint_over = Color(1, 1, 1, 0)
 
 [node name="RichTextLabel" type="Label" parent="PlayerCamera/PlayerHUD/Fuel"]
 modulate = Color(1, 1, 1, 0.835294)
