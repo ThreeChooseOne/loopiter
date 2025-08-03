@@ -235,6 +235,12 @@ func make_habitable():
 func handle_satellite_moon_collision(other_planet: OrbitingBody):
 	print("Collided with moon!")
 	
+func can_change_speed(accelerate: bool) -> bool:
+	if accelerate:
+		return speed < MAX_SPEED
+	else:
+		return speed > MIN_SPEED
+
 func request_speed_change(accelerate: bool) -> void:
 	if accelerate:
 		speed += 20

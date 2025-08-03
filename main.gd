@@ -24,6 +24,7 @@ signal habitable_moon_discovered(moon: OrbitingBody)
 @onready var camera = %PlayerCamera
 @onready var fuel = %PlayerHUD/Fuel
 @onready var hud = %PlayerHUD
+@onready var speed_bar: TextureProgressBar = %Speed
 
 const fuel_cost = 20
 
@@ -91,6 +92,9 @@ func _ready() -> void:
 	habitable_moon_discovered.connect(_on_habitable_moon_discovered)
 	
 	$PlayerCamera/HaloMask.add_orbit_viz(orbits[10])
+	
+	speed_bar.max_value = player.MAX_SPEED
+	speed_bar.min_value = player.MIN_SPEED
 	
 	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
 	
@@ -326,7 +330,7 @@ func update_hud_timer() -> void:
 	var minutes = int(time_left_secs / 60)
 	var seconds: int = time_left_secs - (minutes*60)
 	%Timer.text = "%s:%02d" % [str(minutes), seconds]
-	%Speed.text = "%03d" % player.speed
+	speed_bar.value = player.speed
 
 func _process(delta: float) -> void:
 	camera.position = player.position
@@ -343,8 +347,9 @@ func _process(delta: float) -> void:
 func request_player_speed_change(accelerate: bool):
 	if fuel.value < 5:
 		return
-	fuel.value -= 5
-	change_player_speed.emit(accelerate)
+	if player.can_change_speed(accelerate):
+		fuel.value -= 5
+		change_player_speed.emit(accelerate)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
