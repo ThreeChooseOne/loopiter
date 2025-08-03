@@ -243,7 +243,8 @@ func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> Orbitin
 	
 	# Connect collision signals
 	moon.body_collided.connect(_on_moon_collision)
-	moon.player_crashed.connect(setup_end_game_view.bind(false))
+	moon.player_crashed.connect(handle_player_crash.bind(true))
+	moon.player_crash_mode_reset.connect(handle_player_crash.bind(false))
 	
 	moon.research_area_entered.connect(_on_moon_research_entered)
 	moon.research_area_exited.connect(_on_moon_research_exited)
@@ -251,6 +252,18 @@ func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> Orbitin
 	
 	return moon
 
+var curr_player_crash := false
+func handle_player_crash(enter_crash: bool):
+	if curr_player_crash and not enter_crash:
+		# we were crashing now we are leaving collision
+		print('safe')
+	if not curr_player_crash and enter_crash:
+		# we were crashing now we are leaving collision
+		if num_loops_around == 0:
+			setup_end_game_view(false)
+		num_loops_around -= 1
+	# update the crashing state
+	curr_player_crash = enter_crash
 
 # Habitable Moon System
 func _on_moon_research_completed(moon: OrbitingBody):
