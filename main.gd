@@ -15,9 +15,8 @@ var completed_research_count: int = 0
 var habitable_moon_found: bool = false
 var habitable_moon: OrbitingBody = null
 
-# Input signals
-signal up_key_pressed
-signal down_key_pressed
+signal change_player_speed(accelerate: bool)
+
 signal goto_main_menu
 signal retry_pressed
 signal habitable_moon_discovered(moon: OrbitingBody)
@@ -86,8 +85,7 @@ func _ready() -> void:
 		player.set_collision_mask(2 + 4)   # Can collide with moon layer (2) and research layer (4)
 		player.body_collided.connect(_on_player_collision)
 	
-	up_key_pressed.connect(player._on_up_pressed)
-	down_key_pressed.connect(player._on_down_pressed)
+	change_player_speed.connect(player.request_speed_change)
 	
 	# Connect to habitable moon discovery
 	habitable_moon_discovered.connect(_on_habitable_moon_discovered)
@@ -341,14 +339,20 @@ func _process(delta: float) -> void:
 	# $DebugCanvas.debug_draw_circ(player.position, 150)
 	# var f = 50*Vector2.ONE
 	# $DebugCanvas.debug_draw_rect(player.position-f, player.position+f)
+	
+func request_player_speed_change(accelerate: bool):
+	if fuel.value < 5:
+		return
+	fuel.value -= 5
+	change_player_speed.emit(accelerate)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_UP, KEY_W:
-				up_key_pressed.emit()
+				request_player_speed_change(true)
 			KEY_DOWN, KEY_S:
-				down_key_pressed.emit()
+				request_player_speed_change(false)
 			KEY_I, KEY_A:
 				move_player_inner_orbit()
 			KEY_O, KEY_D:

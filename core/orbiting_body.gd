@@ -235,14 +235,14 @@ func make_habitable():
 func handle_satellite_moon_collision(other_planet: OrbitingBody):
 	print("Collided with moon!")
 	
-func _on_up_pressed():
-	speed += 20
-	speed = clamp(speed, MIN_SPEED, MAX_SPEED)
+func request_speed_change(accelerate: bool) -> void:
+	if accelerate:
+		speed += 20
+		speed = clamp(speed, MIN_SPEED, MAX_SPEED)
+	else:
+		speed -= 20
+		speed = clamp(speed, MIN_SPEED, MAX_SPEED)
 	
-func _on_down_pressed():
-	speed -= 20
-	speed = clamp(speed, MIN_SPEED, MAX_SPEED)
-
 func _process(delta: float) -> void:
 	progress += speed * delta
 	
