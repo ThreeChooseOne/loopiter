@@ -1,12 +1,14 @@
-[gd_scene load_steps=9 format=3 uid="uid://3dw6xlotynkf"]
+[gd_scene load_steps=11 format=3 uid="uid://3dw6xlotynkf"]
 
 [ext_resource type="Script" uid="uid://dkwumx5aqm8c4" path="res://main.gd" id="1_ynt7j"]
 [ext_resource type="Texture2D" uid="uid://c8sn4xi564rph" path="res://assets/background/space-only.png" id="3_272bh"]
 [ext_resource type="Texture2D" uid="uid://cko1c37bawhm0" path="res://assets/tank.svg" id="3_lquwl"]
+[ext_resource type="Texture2D" uid="uid://cpwyxer8quw8n" path="res://assets/ui/speed/speed_bar.png" id="4_4c57u"]
 [ext_resource type="Texture2D" uid="uid://bswv4joab5bvy" path="res://assets/background/jupiter-only.png" id="4_5vw27"]
 [ext_resource type="Texture2D" uid="uid://61ssauhjp5ex" path="res://assets/fuel.svg" id="4_7mycd"]
+[ext_resource type="Texture2D" uid="uid://c7t74jlnwx07c" path="res://assets/ui/speed/speed_bar_progress.png" id="5_efxa6"]
 [ext_resource type="Theme" uid="uid://ckwnik6wg05q3" path="res://assets/theme/theme1.tres" id="7_5vw27"]
-[ext_resource type="Script" uid="uid://c5ix5kmmbuw24" path="res://debug_canvas.gd" id="7_272bh"]
+[ext_resource type="Script" path="res://debug_canvas.gd" id="7_272bh"]
 [ext_resource type="PackedScene" uid="uid://ier84j4eh2qc" path="res://jazz/circular_halo_mask.tscn" id="7_kek77"]
 
 [node name="Main" type="Node2D"]
@@ -37,30 +39,87 @@ unique_name_in_owner = true
 z_index = 100
 z_as_relative = false
 offset_left = -48.0
-offset_top = 141.0
-offset_right = 48.0
-offset_bottom = 187.0
+offset_top = 120.0
+offset_right = 102.0
+offset_bottom = 202.0
+
+[node name="Speed" type="TextureProgressBar" parent="PlayerCamera/PlayerHUD"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 30)
+layout_mode = 2
+nine_patch_stretch = true
+stretch_margin_left = 8
+stretch_margin_top = 10
+stretch_margin_right = 8
+stretch_margin_bottom = 10
+texture_under = ExtResource("4_4c57u")
+texture_progress = ExtResource("5_efxa6")
+
+[node name="RichTextLabel" type="Label" parent="PlayerCamera/PlayerHUD/Speed"]
+modulate = Color(1, 1, 1, 0.835294)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -27.0
+offset_top = -9.0
+offset_right = 27.0
+offset_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 15
+text = "SPEED"
+horizontal_alignment = 1
 
 [node name="Fuel" type="TextureProgressBar" parent="PlayerCamera/PlayerHUD"]
+custom_minimum_size = Vector2(150, 25)
 layout_mode = 2
 step = 0.01
 value = 100.0
+nine_patch_stretch = true
+stretch_margin_left = 12
+stretch_margin_top = 6
+stretch_margin_right = 12
+stretch_margin_bottom = 6
 texture_under = ExtResource("3_lquwl")
 texture_progress = ExtResource("4_7mycd")
 
 [node name="RichTextLabel" type="Label" parent="PlayerCamera/PlayerHUD/Fuel"]
 modulate = Color(1, 1, 1, 0.835294)
-layout_mode = 0
-offset_left = 23.0
-offset_top = 2.5
-offset_right = 77.0
-offset_bottom = 22.5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -27.0
+offset_top = -9.0
+offset_right = 27.0
+offset_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 15
 text = "FUEL"
 horizontal_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PlayerCamera/PlayerHUD"]
+layout_mode = 2
+alignment = 1
+
+[node name="TimeLabel" type="Label" parent="PlayerCamera/PlayerHUD/HBoxContainer"]
+visible = false
+layout_mode = 2
+text = "SPD"
+
+[node name="ReferenceRect" type="ReferenceRect" parent="PlayerCamera/PlayerHUD/HBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 
 [node name="Timer" type="Label" parent="PlayerCamera/PlayerHUD/HBoxContainer"]
@@ -69,15 +128,6 @@ layout_mode = 2
 theme = ExtResource("7_5vw27")
 text = "5:00"
 horizontal_alignment = 1
-
-[node name="ReferenceRect" type="ReferenceRect" parent="PlayerCamera/PlayerHUD/HBoxContainer"]
-custom_minimum_size = Vector2(10, 10)
-layout_mode = 2
-
-[node name="Speed" type="Label" parent="PlayerCamera/PlayerHUD/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "SPD"
 
 [node name="Panel" type="PanelContainer" parent="PlayerCamera"]
 unique_name_in_owner = true
