@@ -18,7 +18,8 @@ var habitable_moon: OrbitingBody = null
 # Input signals
 signal up_key_pressed
 signal down_key_pressed
-signal game_over_timeout
+signal goto_main_menu
+signal retry_pressed
 signal habitable_moon_discovered(moon: OrbitingBody)
 
 @onready var camera = %PlayerCamera
@@ -343,4 +344,9 @@ func _input(event: InputEvent) -> void:
 
 func _on_game_over_timer_timeout() -> void:
 	setup_gameover_view()
-	# game_over_timeout.emit()
+
+func _on_main_menu_pressed() -> void:
+	goto_main_menu.emit()
+
+func _on_retry_pressed() -> void:
+	retry_pressed.emit()

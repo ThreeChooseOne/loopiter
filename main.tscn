@@ -53,10 +53,21 @@ layout_mode = 2
 layout_mode = 2
 color = Color(0, 0, 0, 0.886275)
 
-[node name="ReturnToStartButton" type="Button" parent="PlayerCamera/Panel/CenterContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PlayerCamera/Panel/CenterContainer"]
+layout_mode = 2
+
+[node name="ReturnToStartButton" type="Button" parent="PlayerCamera/Panel/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("7_5vw27")
-text = "Return"
+text = "Main Menu"
+
+[node name="MarginContainer" type="MarginContainer" parent="PlayerCamera/Panel/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 16
+
+[node name="Retry" type="Button" parent="PlayerCamera/Panel/CenterContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "Retry"
 
 [node name="Fuel" type="TextureProgressBar" parent="PlayerCamera"]
 unique_name_in_owner = true
@@ -77,4 +88,6 @@ wait_time = 300.0
 one_shot = true
 autostart = true
 
+[connection signal="pressed" from="PlayerCamera/Panel/CenterContainer/VBoxContainer/ReturnToStartButton" to="." method="_on_main_menu_pressed"]
+[connection signal="pressed" from="PlayerCamera/Panel/CenterContainer/VBoxContainer/MarginContainer/Retry" to="." method="_on_retry_pressed"]
 [connection signal="timeout" from="GameOverTimer" to="." method="_on_game_over_timer_timeout"]

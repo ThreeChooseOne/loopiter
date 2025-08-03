@@ -18,9 +18,13 @@ func _on_tutorial_button_pressed() -> void:
 func _on_game_over() -> void:
 	goto_start_scene()
 	
+func _on_retry() -> void:
+	goto_game_scene()
+	
 func goto_game_scene() -> void:
 	swap_scene_to(MAIN_SCENE_PATH)
-	current_scene_handle.connect("game_over_timeout", _on_game_over)
+	current_scene_handle.connect("goto_main_menu", _on_game_over)
+	current_scene_handle.connect("retry_pressed", _on_retry)
 
 func goto_start_scene() -> void:
 	swap_scene_to(START_SCENE_PATH)
