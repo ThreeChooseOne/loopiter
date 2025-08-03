@@ -90,6 +90,8 @@ func _ready() -> void:
 		player.set_collision_layer(1)  # Player layer
 		player.set_collision_mask(2 + 4)   # Can collide with moon layer (2) and research layer (4)
 		player.body_collided.connect(_on_player_collision)
+		player.player_crashed.connect(handle_player_crash.bind(true))
+		player.player_crash_mode_reset.connect(handle_player_crash.bind(false))
 	
 	change_player_speed.connect(player.request_speed_change)
 	
@@ -243,8 +245,8 @@ func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> Orbitin
 	
 	# Connect collision signals
 	moon.body_collided.connect(_on_moon_collision)
-	moon.player_crashed.connect(handle_player_crash.bind(true))
-	moon.player_crash_mode_reset.connect(handle_player_crash.bind(false))
+	#moon.player_crashed.connect(handle_player_crash.bind(true))
+	#moon.player_crash_mode_reset.connect(handle_player_crash.bind(false))
 	
 	moon.research_area_entered.connect(_on_moon_research_entered)
 	moon.research_area_exited.connect(_on_moon_research_exited)

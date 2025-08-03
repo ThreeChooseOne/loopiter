@@ -1,10 +1,54 @@
-[gd_scene load_steps=4 format=3 uid="uid://d38bucw5q2q2u"]
+[gd_scene load_steps=14 format=3 uid="uid://d38bucw5q2q2u"]
 
 [ext_resource type="Script" uid="uid://jyfubykokonk" path="res://core/orbiting_body.gd" id="1_3x74s"]
 [ext_resource type="Texture2D" uid="uid://r3qtpiwsrdmm" path="res://assets/spaceBuilding_023.png" id="2_ptdtg"]
+[ext_resource type="Texture2D" uid="uid://bjpv6kjf3ew35" path="res://assets/anim/explosion/explosion00.png" id="3_s55bn"]
+[ext_resource type="Texture2D" uid="uid://dvq301uro05hy" path="res://assets/anim/explosion/explosion01.png" id="4_p73st"]
+[ext_resource type="Texture2D" uid="uid://ddudducxkref4" path="res://assets/anim/explosion/explosion02.png" id="5_g20r7"]
+[ext_resource type="Texture2D" uid="uid://bi0evm4b0a2e6" path="res://assets/anim/explosion/explosion03.png" id="6_dqutg"]
+[ext_resource type="Texture2D" uid="uid://b2b6j5y3uhdg0" path="res://assets/anim/explosion/explosion04.png" id="7_qurgt"]
+[ext_resource type="Texture2D" uid="uid://c7y0h2wshdpss" path="res://assets/anim/explosion/explosion05.png" id="8_mds53"]
+[ext_resource type="Texture2D" uid="uid://ctfrvrvj8v6bj" path="res://assets/anim/explosion/explosion06.png" id="9_m83dv"]
+[ext_resource type="Texture2D" uid="uid://bq6bpj0ome88" path="res://assets/anim/explosion/explosion07.png" id="10_80tbj"]
+[ext_resource type="Texture2D" uid="uid://c5kxvaj4m5ub6" path="res://assets/anim/explosion/explosion08.png" id="11_irwjv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ptdtg"]
 size = Vector2(82, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_gyxel"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_s55bn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_p73st")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_g20r7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_dqutg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_qurgt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_mds53")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_m83dv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_80tbj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_irwjv")
+}],
+"loop": true,
+"name": &"explosion",
+"speed": 20.0
+}]
 
 [node name="Player" type="PathFollow2D"]
 script = ExtResource("1_3x74s")
@@ -12,9 +56,27 @@ metadata/_custom_type_script = "uid://jyfubykokonk"
 
 [node name="Area2D" type="Area2D" parent="."]
 
-[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
+[node name="PlayerSprite" type="Sprite2D" parent="Area2D"]
+unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_ptdtg")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_ptdtg")
+
+[node name="Explosion" type="AnimatedSprite2D" parent="Area2D"]
+unique_name_in_owner = true
+visible = false
+scale = Vector2(0.25, 0.25)
+sprite_frames = SubResource("SpriteFrames_gyxel")
+animation = &"explosion"
+autoplay = "explosion"
+frame = 5
+frame_progress = 0.65306
+
+[node name="Timer" type="Timer" parent="Area2D/Explosion"]
+unique_name_in_owner = true
+wait_time = 0.1
+one_shot = true
+
+[connection signal="timeout" from="Area2D/Explosion/Timer" to="." method="_on_explostion_timer_timeout"]

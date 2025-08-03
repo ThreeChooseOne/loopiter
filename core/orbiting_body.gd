@@ -159,7 +159,7 @@ func _on_area_entered(area):
 	if is_the_player_body(other_orbiting_body):
 		print("Player crashed into moon!")
 		research_timer.paused = true
-		player_crashed.emit()
+		other_orbiting_body.explode()
 	else:
 		handle_satellite_moon_collision(other_orbiting_body)
 		
@@ -173,11 +173,16 @@ func _on_area_exited(area):
 
 func is_the_player_body(other_orbiting_body: OrbitingBody) -> bool:
 	if other_orbiting_body is OrbitingBody:
-		# Check if it's the player crashing into this moon
+		# Check if it's the player crashing into thisi moon
 		if other_orbiting_body.name == "Player":
 			return true
 	return false
-
+	
+func explode():
+	%PlayerSprite.visible = false
+	%Explosion.visible = true
+	%Explosion/Timer.start()
+	
 # Research area event handlers
 func _on_research_area_entered(area):
 	# Check if it's the player's collision area
@@ -300,3 +305,9 @@ func set_research_collision_layer(layer: int):
 func set_research_collision_mask(mask: int):
 	if research_area:
 		research_area.collision_mask = mask
+
+
+func _on_explostion_timer_timeout() -> void:
+	%Explosion.visible = false
+	%PlayerSprite.visible = true
+	player_crashed.emit()
