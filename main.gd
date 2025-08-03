@@ -25,6 +25,7 @@ signal habitable_moon_discovered(moon: OrbitingBody)
 @onready var fuel = %PlayerHUD/Fuel
 @onready var hud = %PlayerHUD
 @onready var speed_bar: TextureProgressBar = %Speed
+@onready var animation_player: AnimationPlayer = %AnimationPlayer
 
 const fuel_cost = 20
 
@@ -305,7 +306,9 @@ func move_player_inner_orbit():
 
 func move_player_orbit(out: bool):
 	if fuel.value < fuel_cost:
+		animation_player.play("blink_red")
 		return
+	animation_player.stop()
 	fuel.value -= fuel_cost
 
 	var curr = current_player_orbit()
