@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://ier84j4eh2qc"]
+
+[ext_resource type="Script" uid="uid://i1422wb8s04" path="res://jazz/circular_halo_mask.gd" id="1_816mg"]
+[ext_resource type="Texture2D" uid="uid://cwmbfsprikc0j" path="res://assets/masks/coolest_possible_mask_mask.png" id="2_816mg"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_816mg")
+
+[node name="RadarTimer" type="Timer" parent="."]
+
+[node name="InvertMask" type="Sprite2D" parent="."]
+clip_children = 2
+scale = Vector2(0.01, 0.01)
+texture = ExtResource("2_816mg")
+
+[connection signal="timeout" from="RadarTimer" to="." method="_on_radar_timer_timeout"]
