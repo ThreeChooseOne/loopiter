@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://3dw6xlotynkf"]
+[gd_scene load_steps=15 format=3 uid="uid://3dw6xlotynkf"]
 
 [ext_resource type="Script" uid="uid://dkwumx5aqm8c4" path="res://main.gd" id="1_ynt7j"]
 [ext_resource type="Texture2D" uid="uid://c8sn4xi564rph" path="res://assets/background/space-only.png" id="3_272bh"]
@@ -6,10 +6,14 @@
 [ext_resource type="Texture2D" uid="uid://cpwyxer8quw8n" path="res://assets/ui/speed/speed_bar.png" id="4_4c57u"]
 [ext_resource type="Texture2D" uid="uid://bswv4joab5bvy" path="res://assets/background/jupiter-only.png" id="4_5vw27"]
 [ext_resource type="Texture2D" uid="uid://61ssauhjp5ex" path="res://assets/fuel.svg" id="4_7mycd"]
-[ext_resource type="Texture2D" uid="uid://c7t74jlnwx07c" path="res://assets/ui/speed/speed_bar_progress.png" id="5_efxa6"]
+[ext_resource type="Texture2D" uid="uid://ck1bplf8h3nsh" path="res://assets/ui/speed/speed_bar_border.png" id="5_dg77c"]
+[ext_resource type="Texture2D" uid="uid://cqs066fs8dvmj" path="res://assets/ui/speed/speed_bar_progress_trim.png" id="6_efxa6"]
 [ext_resource type="Theme" uid="uid://ckwnik6wg05q3" path="res://assets/theme/theme1.tres" id="7_5vw27"]
 [ext_resource type="Script" path="res://debug_canvas.gd" id="7_272bh"]
 [ext_resource type="PackedScene" uid="uid://ier84j4eh2qc" path="res://jazz/circular_halo_mask.tscn" id="7_kek77"]
+
+[sub_resource type="Animation" id="Animation_4c57u"]
+length = 0.001
 
 [sub_resource type="Animation" id="Animation_dg77c"]
 resource_name = "blink_red"
@@ -26,9 +30,6 @@ tracks/0/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(0.960784, 0.286275, 0.152941, 0.729412), Color(1, 1, 1, 0), Color(0.960784, 0.286275, 0.152941, 0.717647), Color(1, 1, 1, 0)]
 }
-
-[sub_resource type="Animation" id="Animation_4c57u"]
-length = 0.001
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ycdy4"]
 _data = {
@@ -70,9 +71,9 @@ zoom = Vector2(2.5, 2.5)
 unique_name_in_owner = true
 z_index = 100
 z_as_relative = false
-offset_left = -48.0
+offset_left = -75.0
 offset_top = 120.0
-offset_right = 102.0
+offset_right = 75.0
 offset_bottom = 202.0
 
 [node name="Speed" type="TextureProgressBar" parent="PlayerCamera/PlayerHUD"]
@@ -85,7 +86,8 @@ stretch_margin_top = 10
 stretch_margin_right = 8
 stretch_margin_bottom = 10
 texture_under = ExtResource("4_4c57u")
-texture_progress = ExtResource("5_efxa6")
+texture_over = ExtResource("5_dg77c")
+texture_progress = ExtResource("6_efxa6")
 
 [node name="RichTextLabel" type="Label" parent="PlayerCamera/PlayerHUD/Speed"]
 modulate = Color(1, 1, 1, 0.835294)
