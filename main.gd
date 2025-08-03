@@ -90,6 +90,7 @@ func _ready() -> void:
 		player.set_collision_layer(1)  # Player layer
 		player.set_collision_mask(2 + 4)   # Can collide with moon layer (2) and research layer (4)
 		player.body_collided.connect(_on_player_collision)
+		player.player_crashed.connect(setup_end_game_view.bind(false))
 	
 	change_player_speed.connect(player.request_speed_change)
 	
