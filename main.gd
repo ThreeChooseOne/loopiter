@@ -26,6 +26,7 @@ signal habitable_moon_discovered(moon: OrbitingBody)
 @onready var hud = %PlayerHUD
 @onready var speed_bar: TextureProgressBar = %Speed
 @onready var animation_player: AnimationPlayer = %AnimationPlayer
+@onready var researched_moons: RichTextLabel = %ResearchedMoons
 
 const fuel_cost = 20
 
@@ -98,6 +99,8 @@ func _ready() -> void:
 	speed_bar.min_value = player.MIN_SPEED
 	
 	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
+	
+	update_research_display()
 	
 func setup_end_game_view(win: bool) -> void:
 	if $%Panel.visible:
@@ -251,9 +254,12 @@ func _on_moon_research_completed(moon: OrbitingBody):
 	completed_research_count += 1
 	print("Research completed on ", moon.name, " (", completed_research_count, "/", TOTAL_MOONS, ")")
 	
+	update_research_display()
+	
 	# Don't check for habitability if we already found one
 	if habitable_moon_found:
 		return
+		
 	
 	# Calculate current probability
 	var current_probability = completed_research_count * HABITABLE_CHANCE_PER_COMPLETION
@@ -334,6 +340,10 @@ func update_hud_timer() -> void:
 	var seconds: int = time_left_secs - (minutes*60)
 	%Timer.text = "%s:%02d" % [str(minutes), seconds]
 	speed_bar.value = player.speed
+	
+func update_research_display():
+	if researched_moons:
+		researched_moons.text = "Researched Moons: %d/%d" % [completed_research_count, TOTAL_MOONS]
 
 func _process(delta: float) -> void:
 	camera.position = player.position

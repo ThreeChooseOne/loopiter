@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://ck1bplf8h3nsh" path="res://assets/ui/speed/speed_bar_border.png" id="5_dg77c"]
 [ext_resource type="Texture2D" uid="uid://cqs066fs8dvmj" path="res://assets/ui/speed/speed_bar_progress_trim.png" id="6_efxa6"]
 [ext_resource type="Theme" uid="uid://ckwnik6wg05q3" path="res://assets/theme/theme1.tres" id="7_5vw27"]
-[ext_resource type="Script" path="res://debug_canvas.gd" id="7_272bh"]
+[ext_resource type="Script" uid="uid://c5ix5kmmbuw24" path="res://debug_canvas.gd" id="7_272bh"]
 [ext_resource type="PackedScene" uid="uid://ier84j4eh2qc" path="res://jazz/circular_halo_mask.tscn" id="7_kek77"]
 
 [sub_resource type="Animation" id="Animation_4c57u"]
@@ -242,6 +242,15 @@ layout_mode = 2
 text = "Retry"
 
 [node name="HaloMask" parent="PlayerCamera" instance=ExtResource("7_kek77")]
+
+[node name="ResearchedMoons" type="RichTextLabel" parent="PlayerCamera"]
+unique_name_in_owner = true
+offset_left = -372.0
+offset_top = -205.0
+offset_right = -172.0
+offset_bottom = -169.0
+text = "Moons Researched RichTextBox"
+fit_content = true
 
 [node name="DebugCanvas" type="Node2D" parent="."]
 script = ExtResource("7_272bh")
