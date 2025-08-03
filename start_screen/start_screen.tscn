@@ -1,20 +1,40 @@
-[gd_scene load_steps=5 format=3 uid="uid://debfvlgbpxnjv"]
+[gd_scene load_steps=7 format=3 uid="uid://debfvlgbpxnjv"]
 
 [ext_resource type="Script" uid="uid://b7dlyl0ohs5xq" path="res://start_screen/start_screen_control.gd" id="1_8bm5k"]
 [ext_resource type="Texture2D" uid="uid://c8sn4xi564rph" path="res://assets/background/space-only.png" id="2_og173"]
 [ext_resource type="Texture2D" uid="uid://bswv4joab5bvy" path="res://assets/background/jupiter-only.png" id="3_2bupo"]
 [ext_resource type="Theme" uid="uid://ckwnik6wg05q3" path="res://assets/theme/theme1.tres" id="3_c3q8q"]
+[ext_resource type="Texture2D" uid="uid://4y21nvjekp3q" path="res://assets/planets/planet06.png" id="5_c3q8q"]
+
+[sub_resource type="Curve2D" id="Curve2D_2bupo"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, -300, 200, 560, -460, 0, 460, 0, 960, -100, 0, -300, 0, 300, 1720, 560, 460, 0, -460, 0, 960, 1220, 0, 300, 0, 0, 200, 560)
+}
+point_count = 5
 
 [node name="StartScreenControl" type="Node2D"]
 script = ExtResource("1_8bm5k")
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(3.333, 3.333)
+texture = ExtResource("2_og173")
+centered = false
+
+[node name="Orbit" type="Path2D" parent="."]
+curve = SubResource("Curve2D_2bupo")
+
+[node name="Moon" type="PathFollow2D" parent="Orbit"]
+unique_name_in_owner = true
+position = Vector2(200, 560)
+rotation = -1.5708
+
+[node name="Sprite2D" type="Sprite2D" parent="Orbit/Moon"]
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("5_c3q8q")
+
+[node name="Panel" type="MarginContainer" parent="."]
 offset_right = 1920.0
 offset_bottom = 1120.0
-
-[node name="Space" type="TextureRect" parent="Panel"]
-layout_mode = 2
-texture = ExtResource("2_og173")
 
 [node name="Jupiter" type="TextureRect" parent="Panel"]
 layout_mode = 2
