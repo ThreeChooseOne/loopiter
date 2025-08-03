@@ -1,7 +1,8 @@
-[gd_scene load_steps=15 format=3 uid="uid://deronc2lnf2ul"]
+[gd_scene load_steps=16 format=3 uid="uid://deronc2lnf2ul"]
 
 [ext_resource type="Script" uid="uid://cjt30vrp8t2iu" path="res://tutorial/tutorial.gd" id="1_burua"]
 [ext_resource type="Theme" uid="uid://ckwnik6wg05q3" path="res://assets/theme/theme1.tres" id="1_kcami"]
+[ext_resource type="Texture2D" uid="uid://c8sn4xi564rph" path="res://assets/background/space-only.png" id="2_00b0i"]
 [ext_resource type="Texture2D" uid="uid://c42evmt7l833q" path="res://assets/ui/keys/keyboard_arrow_up_outline.png" id="3_qk73h"]
 [ext_resource type="Texture2D" uid="uid://r3qtpiwsrdmm" path="res://assets/spaceBuilding_023.png" id="3_rcm07"]
 [ext_resource type="Texture2D" uid="uid://dr33qhh7u25w8" path="res://assets/ui/keys/keyboard_arrow_down_outline.png" id="3_vy6qu"]
@@ -19,21 +20,25 @@
 [node name="Tutorial" type="Node2D"]
 script = ExtResource("1_burua")
 
-[node name="Node2D" type="PanelContainer" parent="."]
+[node name="Panel" type="PanelContainer" parent="."]
 offset_right = 1920.0
 offset_bottom = 1080.0
 
-[node name="MarginContainer" type="MarginContainer" parent="Node2D"]
+[node name="TextureRect" type="TextureRect" parent="Panel"]
+layout_mode = 2
+texture = ExtResource("2_00b0i")
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
 layout_mode = 2
 theme_override_constants/margin_left = 64
 theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 64
 theme_override_constants/margin_bottom = 32
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
 layout_mode = 2
 
-[node name="Title" type="RichTextLabel" parent="Node2D/MarginContainer/VBoxContainer"]
+[node name="Title" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 theme = ExtResource("1_kcami")
@@ -44,15 +49,15 @@ fit_content = true
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Content" type="HBoxContainer" parent="Node2D/MarginContainer/VBoxContainer"]
+[node name="Content" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Objectives" type="VBoxContainer" parent="Node2D/MarginContainer/VBoxContainer/Content"]
+[node name="Objectives" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/Content"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ObjTitle" type="RichTextLabel" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives"]
+[node name="ObjTitle" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives"]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 theme_override_font_sizes/normal_font_size = 40
@@ -62,65 +67,56 @@ fit_content = true
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives"]
 layout_mode = 2
 size_flags_vertical = 3
 alignment = 1
 
-[node name="Description" type="RichTextLabel" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer"]
+[node name="Description" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/line_separation = 10
 theme_override_font_sizes/normal_font_size = 32
-text = "Your goal is to find the one habitable moon of Jupiter from the dozens of potential candidates. "
+text = "Earth is doomed! Your goal is to find the one habitable moon of Jupiter from the dozens of potential candidates. 
+
+Stay close to moons to complete research and find the correct moon before it's too late!"
 fit_content = true
 
-[node name="MarginContainer" type="MarginContainer" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_top = 48
-
-[node name="Description2" type="RichTextLabel" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/MarginContainer"]
-layout_mode = 2
-theme_override_constants/line_separation = 10
-theme_override_font_sizes/normal_font_size = 32
-text = "Stay close to moons to complete research and find the correct moon before it's too late!"
-fit_content = true
-
-[node name="CenterContainer" type="MarginContainer" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer"]
+[node name="CenterContainer" type="MarginContainer" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_top = 32
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer"]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer"]
 layout_mode = 2
 
-[node name="SubViewport" type="SubViewport" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer/SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer/SubViewportContainer"]
 transparent_bg = true
 handle_input_locally = false
 size = Vector2i(894, 340)
 render_target_update_mode = 4
 
-[node name="Sat" type="Sprite2D" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer/SubViewportContainer/SubViewport"]
+[node name="Sat" type="Sprite2D" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer/SubViewportContainer/SubViewport"]
 position = Vector2(309.25, 205.5)
 scale = Vector2(0.719697, 0.719697)
 texture = ExtResource("3_rcm07")
 
-[node name="Moon" type="Sprite2D" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer/SubViewportContainer/SubViewport"]
+[node name="Moon" type="Sprite2D" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer/SubViewportContainer/SubViewport"]
 position = Vector2(647, 169)
 scale = Vector2(0.171875, 0.171875)
 texture = ExtResource("4_t57g5")
 
-[node name="Glow" type="Sprite2D" parent="Node2D/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer/SubViewportContainer/SubViewport/Moon"]
-modulate = Color(1, 1, 1, 0.215686)
+[node name="Glow" type="Sprite2D" parent="Panel/MarginContainer/VBoxContainer/Content/Objectives/VBoxContainer/CenterContainer/SubViewportContainer/SubViewport/Moon"]
+modulate = Color(1, 1, 1, 0.392157)
 z_index = -10
 material = SubResource("CanvasItemMaterial_3e0vf")
 scale = Vector2(3, 3)
 texture = ExtResource("5_3e0vf")
 
-[node name="Controls" type="VBoxContainer" parent="Node2D/MarginContainer/VBoxContainer/Content"]
+[node name="Controls" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/Content"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="RichTextLabel" type="RichTextLabel" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls"]
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer/Content/Controls"]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 theme_override_font_sizes/normal_font_size = 40
@@ -131,16 +127,16 @@ fit_content = true
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/Content/Controls"]
 layout_mode = 2
 size_flags_vertical = 3
 alignment = 1
 
-[node name="SpeedUpRow" type="HBoxContainer" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer"]
+[node name="SpeedUpRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="RichTextLabel" type="RichTextLabel" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SpeedUpRow"]
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SpeedUpRow"]
 custom_minimum_size = Vector2(475, 0)
 layout_mode = 2
 theme_override_font_sizes/normal_font_size = 32
@@ -150,21 +146,21 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Up" type="TextureRect" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SpeedUpRow"]
+[node name="Up" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SpeedUpRow"]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("3_qk73h")
 
-[node name="W" type="TextureRect" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SpeedUpRow"]
+[node name="W" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SpeedUpRow"]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("4_ridmi")
 
-[node name="SlowDownRow" type="HBoxContainer" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer"]
+[node name="SlowDownRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="RichTextLabel" type="RichTextLabel" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SlowDownRow"]
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SlowDownRow"]
 custom_minimum_size = Vector2(475, 0)
 layout_mode = 2
 theme_override_font_sizes/normal_font_size = 32
@@ -174,21 +170,21 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Down" type="TextureRect" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SlowDownRow"]
+[node name="Down" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SlowDownRow"]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("3_vy6qu")
 
-[node name="S" type="TextureRect" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SlowDownRow"]
+[node name="S" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/SlowDownRow"]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("6_7d2fe")
 
-[node name="OutRow" type="HBoxContainer" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer"]
+[node name="OutRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="RichTextLabel" type="RichTextLabel" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/OutRow"]
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/OutRow"]
 custom_minimum_size = Vector2(475, 0)
 layout_mode = 2
 theme_override_font_sizes/normal_font_size = 32
@@ -198,21 +194,21 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="O" type="TextureRect" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/OutRow"]
+[node name="O" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/OutRow"]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("5_tifc7")
 
-[node name="D" type="TextureRect" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/OutRow"]
+[node name="D" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/OutRow"]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("6_3npmm")
 
-[node name="InRow" type="HBoxContainer" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer"]
+[node name="InRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="RichTextLabel" type="RichTextLabel" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/InRow"]
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/InRow"]
 custom_minimum_size = Vector2(475, 0)
 layout_mode = 2
 theme_override_font_sizes/normal_font_size = 32
@@ -222,29 +218,29 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="I" type="TextureRect" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/InRow"]
+[node name="I" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/InRow"]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("7_7d2fe")
 
-[node name="A" type="TextureRect" parent="Node2D/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/InRow"]
+[node name="A" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/Content/Controls/VBoxContainer/InRow"]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("8_rcm07")
 
-[node name="Control" type="Control" parent="Node2D/MarginContainer/VBoxContainer"]
+[node name="Control" type="Control" parent="Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="CloseContainer" type="MarginContainer" parent="Node2D"]
+[node name="CloseContainer" type="MarginContainer" parent="Panel"]
 layout_mode = 2
 theme_override_constants/margin_top = 64
 theme_override_constants/margin_right = 64
 
-[node name="CloseButton" type="Button" parent="Node2D/CloseContainer"]
+[node name="CloseButton" type="Button" parent="Panel/CloseContainer"]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
 theme_override_font_sizes/font_size = 32
 text = "Close"
 
-[connection signal="pressed" from="Node2D/CloseContainer/CloseButton" to="." method="_on_close_button_pressed"]
+[connection signal="pressed" from="Panel/CloseContainer/CloseButton" to="." method="_on_close_button_pressed"]
