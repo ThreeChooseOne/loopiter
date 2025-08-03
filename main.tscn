@@ -47,6 +47,18 @@ value = 100.0
 texture_under = ExtResource("3_lquwl")
 texture_progress = ExtResource("4_7mycd")
 
+[node name="RichTextLabel" type="Label" parent="PlayerCamera/PlayerHUD/Fuel"]
+modulate = Color(1, 1, 1, 0.835294)
+layout_mode = 0
+offset_left = 23.0
+offset_top = 2.5
+offset_right = 77.0
+offset_bottom = 22.5
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+text = "FUEL"
+horizontal_alignment = 1
+
 [node name="Timer" type="Label" parent="PlayerCamera/PlayerHUD"]
 layout_mode = 2
 theme = ExtResource("7_5vw27")
