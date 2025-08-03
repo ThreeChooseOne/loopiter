@@ -1,11 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://dpn5blbx4huff"]
+[gd_scene load_steps=2 format=3 uid="uid://dpn5blbx4huff"]
 
 [ext_resource type="Script" uid="uid://dy1x347yihpg0" path="res://root_scene.gd" id="1_itajj"]
-[ext_resource type="PackedScene" uid="uid://debfvlgbpxnjv" path="res://start_screen/start_screen.tscn" id="2_c77vg"]
 
 [node name="RootScene" type="Node2D"]
 script = ExtResource("1_itajj")
-
-[node name="StartScreen" parent="." instance=ExtResource("2_c77vg")]
-
-[connection signal="start_button_pressed" from="StartScreen" to="." method="_on_start_screen_start_button_pressed"]

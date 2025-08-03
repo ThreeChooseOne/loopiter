@@ -5,6 +5,7 @@
 [ext_resource type="StyleBox" uid="uid://b6kfe37guj2wr" path="res://assets/theme/button_pressed_stylebox.tres" id="2_vpyvb"]
 
 [resource]
+default_font = ExtResource("1_vpyvb")
 Button/colors/font_color = Color(0, 0, 0, 1)
 Button/colors/font_focus_color = Color(0.0197068, 0.00112439, 0.000237962, 1)
 Button/colors/font_hover_color = Color(0.960784, 0.286275, 0.152941, 1)
