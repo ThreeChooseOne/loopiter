@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bswv4joab5bvy" path="res://assets/background/jupiter-only.png" id="4_5vw27"]
 [ext_resource type="Texture2D" uid="uid://61ssauhjp5ex" path="res://assets/fuel.svg" id="4_7mycd"]
 [ext_resource type="Theme" uid="uid://ckwnik6wg05q3" path="res://assets/theme/theme1.tres" id="7_5vw27"]
-[ext_resource type="Script" path="res://debug_canvas.gd" id="7_272bh"]
+[ext_resource type="Script" uid="uid://c5ix5kmmbuw24" path="res://debug_canvas.gd" id="7_272bh"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_ynt7j")
@@ -30,17 +30,6 @@ texture = ExtResource("4_5vw27")
 unique_name_in_owner = true
 ignore_rotation = false
 zoom = Vector2(2.5, 2.5)
-
-[node name="Fuel" type="TextureProgressBar" parent="PlayerCamera"]
-unique_name_in_owner = true
-offset_left = -48.0
-offset_top = 150.0
-offset_right = 48.0
-offset_bottom = 174.0
-step = 0.01
-value = 100.0
-texture_under = ExtResource("3_lquwl")
-texture_progress = ExtResource("4_7mycd")
 
 [node name="Panel" type="PanelContainer" parent="PlayerCamera"]
 unique_name_in_owner = true
@@ -115,6 +104,28 @@ theme_override_constants/margin_top = 16
 [node name="Retry" type="Button" parent="PlayerCamera/Panel/CenterContainer/Conainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
 text = "Retry"
+
+[node name="PlayerHUD" type="VBoxContainer" parent="PlayerCamera"]
+unique_name_in_owner = true
+z_index = 100
+z_as_relative = false
+offset_left = -48.0
+offset_top = 141.0
+offset_right = 48.0
+offset_bottom = 187.0
+
+[node name="Fuel" type="TextureProgressBar" parent="PlayerCamera/PlayerHUD"]
+layout_mode = 2
+step = 0.01
+value = 100.0
+texture_under = ExtResource("3_lquwl")
+texture_progress = ExtResource("4_7mycd")
+
+[node name="Timer" type="Label" parent="PlayerCamera/PlayerHUD"]
+layout_mode = 2
+theme = ExtResource("7_5vw27")
+text = "5:00"
+horizontal_alignment = 1
 
 [node name="DebugCanvas" type="Node2D" parent="."]
 script = ExtResource("7_272bh")

@@ -23,7 +23,8 @@ signal retry_pressed
 signal habitable_moon_discovered(moon: OrbitingBody)
 
 @onready var camera = %PlayerCamera
-@onready var fuel = %Fuel
+@onready var fuel = %PlayerHUD/Fuel
+@onready var hud = %PlayerHUD
 
 const fuel_cost = 20
 
@@ -316,9 +317,16 @@ func current_player_orbit() -> int:
 			return i
 	return -1
 
+func update_hud_timer() -> void:
+	var time_left_secs = $GameOverTimer.time_left
+	var minutes = int(time_left_secs / 60)
+	var seconds: int = time_left_secs - (minutes*60)
+	$PlayerCamera/PlayerHUD/Timer.text = "%s:%02d" % [str(minutes), seconds]
+
 func _process(delta: float) -> void:
 	camera.position = player.position
 	fuel.value = fuel.value + 20 * delta
+	update_hud_timer()
 
 	# Example Code:
 	#
