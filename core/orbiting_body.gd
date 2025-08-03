@@ -41,9 +41,11 @@ var range_idicator: Sprite2D
 
 # Research collection system
 var research_timer: Timer
+var reset_timer: Timer
 var player_in_research_range: bool = false
 var current_research_player: OrbitingBody = null
 const RESEARCH_INTERVAL: float = 5.0  # 5 seconds per research point
+const RESET_INTERVAL: float = 0.1 # 100 ms grace perioud to reenter research zone
 
 func _init():
 	rotates = false
@@ -130,6 +132,11 @@ func setup_research_system():
 	research_timer.wait_time = RESEARCH_INTERVAL
 	research_timer.timeout.connect(_on_research_timer_timeout)
 	add_child(research_timer)
+	
+	reset_timer = Timer.new()
+	reset_timer.wait_time = RESET_INTERVAL
+	reset_timer.timeout.connect(_on_reset_timer_timeout)
+	add_child(reset_timer)
 
 # Direct collision event handlers
 func _on_body_entered(body):
@@ -157,22 +164,20 @@ func _on_research_area_entered(area):
 	var potential_player = area.get_parent()
 	if potential_player is OrbitingBody and potential_player.name == "Player":
 		print("Player entered research range of moon!")
-		current_research_player = potential_player
-		player_in_research_range = true
-		start_research_collection()
-		research_area_entered.emit(potential_player)
-		range_idicator.modulate = Color(1, 1, 1, 0.2)
+		reset_timer.stop()
+		if not player_in_research_range:
+			current_research_player = potential_player
+			player_in_research_range = true
+			start_research_collection()
+			research_area_entered.emit(potential_player)
+			range_idicator.modulate = Color(1, 1, 1, 0.2)
 	
 func _on_research_area_exited(area):
 	# Check if it's the player leaving
 	var potential_player = area.get_parent()
 	if potential_player is OrbitingBody and potential_player.name == "Player":
 		print("Player left research range of moon!")
-		player_in_research_range = false
-		current_research_player = null
-		stop_research_collection()
-		research_area_exited.emit(potential_player)
-		range_idicator.modulate = Color(0.8, 0.8, 0.8, 0.1)
+		reset_timer.start()
 		
 func start_research_collection():
 	if research.value < research.max_value:
@@ -182,6 +187,15 @@ func start_research_collection():
 func stop_research_collection():
 	print("Stopping research collection timer...")
 	research_timer.stop()
+	
+func _on_reset_timer_timeout():
+	reset_timer.stop()
+	print("Grace period ended!")
+	player_in_research_range = false
+	current_research_player = null
+	stop_research_collection()
+	#research_area_exited.emit(potential_player)
+	range_idicator.modulate = Color(0.8, 0.8, 0.8, 0.1)
 	
 func _on_research_timer_timeout():
 	if player_in_research_range and research.value < research.max_value:
