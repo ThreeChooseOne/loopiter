@@ -245,8 +245,8 @@ func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> Orbitin
 	
 	# Connect collision signals
 	moon.body_collided.connect(_on_moon_collision)
-	#moon.player_crashed.connect(handle_player_crash.bind(true))
-	#moon.player_crash_mode_reset.connect(handle_player_crash.bind(false))
+	moon.player_crashed.connect(handle_player_crash.bind(true))
+	moon.player_crash_mode_reset.connect(handle_player_crash.bind(false))
 	
 	moon.research_area_entered.connect(_on_moon_research_entered)
 	moon.research_area_exited.connect(_on_moon_research_exited)
