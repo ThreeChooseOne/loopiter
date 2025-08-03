@@ -236,7 +236,6 @@ texture = ExtResource("8_rcm07")
 layout_mode = 2
 
 [node name="CloseContainer" type="MarginContainer" parent="Node2D"]
-visible = false
 layout_mode = 2
 theme_override_constants/margin_top = 64
 theme_override_constants/margin_right = 64
