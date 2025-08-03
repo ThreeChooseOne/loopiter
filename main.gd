@@ -23,9 +23,11 @@ signal retry_pressed
 signal habitable_moon_discovered(moon: OrbitingBody)
 
 @onready var camera = %PlayerCamera
-@onready var fuel = %Fuel
+@onready var fuel = %PlayerHUD/Fuel
+@onready var hud = %PlayerHUD
 
 const fuel_cost = 20
+var move_hud: Vector2 = Vector2.ZERO
 
 const num_orbits = 21
 const moons_per_orbit = 3
@@ -90,6 +92,10 @@ func _ready() -> void:
 	
 	# Connect to habitable moon discovery
 	habitable_moon_discovered.connect(_on_habitable_moon_discovered)
+	
+	# compute HUD position transform
+	var viewport_size = get_viewport_rect().size
+	move_hud = Vector2(-viewport_size.x/2, -300)
 	
 	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
 	
@@ -319,6 +325,10 @@ func current_player_orbit() -> int:
 func _process(delta: float) -> void:
 	camera.position = player.position
 	fuel.value = fuel.value + 20 * delta
+	var time_left_secs = $GameOverTimer.time_left
+	var minutes = int(time_left_secs / 60)
+	var seconds: int = time_left_secs - (minutes*60)
+	$PlayerCamera/PlayerHUD/Timer.text = "%s:%02d" % [str(minutes), seconds]
 
 	# Example Code:
 	#
