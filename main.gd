@@ -69,11 +69,11 @@ func _ready() -> void:
 	populate_selected_orbits_with_moons()
 	
 	# Debug visualization
-	orbits[0].visualize_debug(true)
-	orbits[5].visualize_debug(true)
-	orbits[10].visualize_debug(true)
-	orbits[15].visualize_debug(true)
-	orbits[20].visualize_debug(true)
+	#orbits[0].visualize_debug(true)
+	#orbits[5].visualize_debug(true)
+	#orbits[10].visualize_debug(true)
+	#orbits[15].visualize_debug(true)
+	#orbits[20].visualize_debug(true)
 	
 	# Create player on orbit 10
 	player = player_scene.instantiate()
@@ -91,6 +91,8 @@ func _ready() -> void:
 	
 	# Connect to habitable moon discovery
 	habitable_moon_discovered.connect(_on_habitable_moon_discovered)
+	
+	$PlayerCamera/HaloMask.add_orbit_viz(orbits[10])
 	
 	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
 	
@@ -313,6 +315,7 @@ func move_player_orbit(out: bool):
 		orbits[new].add_child(player)
 		# Keep player angle the same between orbits
 		player.progress_ratio = progress_ratio
+		$PlayerCamera/HaloMask.add_orbit_viz(orbits[new])
 
 func current_player_orbit() -> int:
 	for i in len(orbits):
