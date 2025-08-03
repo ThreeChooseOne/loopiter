@@ -93,8 +93,10 @@ func _ready() -> void:
 	
 	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
 	
-func setup_gameover_view() -> void:
+func setup_end_game_view(win: bool) -> void:
 	%Panel.visible = true
+	%GameOverLabel.visible = !win
+	%WinLabel.visible = win
 	
 func generate_orbit_speeds():
 	# Generate a random speed for each orbit that will have moons
@@ -226,7 +228,7 @@ func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> Orbitin
 	
 	# Connect collision signals
 	moon.body_collided.connect(_on_moon_collision)
-	moon.player_crashed.connect(setup_gameover_view)
+	moon.player_crashed.connect(setup_end_game_view.bind(false))
 	
 	moon.research_area_entered.connect(_on_moon_research_entered)
 	moon.research_area_exited.connect(_on_moon_research_exited)
@@ -264,9 +266,7 @@ func _on_moon_research_completed(moon: OrbitingBody):
 
 func _on_habitable_moon_discovered(moon: OrbitingBody):
 	print("GAME WON! Player discovered habitable moon: ", moon.name)
-	# Add win condition logic here
-	# setup_win_view() or similar
-	setup_gameover_view()
+	setup_end_game_view(true)
 
 # Collision event handlers
 func _on_moon_collision(body):
@@ -343,7 +343,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _on_game_over_timer_timeout() -> void:
-	setup_gameover_view()
+	setup_end_game_view(false)
 
 func _on_main_menu_pressed() -> void:
 	goto_main_menu.emit()
