@@ -1,11 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://3dw6xlotynkf"]
+[gd_scene load_steps=8 format=3 uid="uid://3dw6xlotynkf"]
 
 [ext_resource type="Script" uid="uid://dkwumx5aqm8c4" path="res://main.gd" id="1_ynt7j"]
 [ext_resource type="Texture2D" uid="uid://c8sn4xi564rph" path="res://assets/background/space-only.png" id="3_272bh"]
 [ext_resource type="Texture2D" uid="uid://cko1c37bawhm0" path="res://assets/tank.svg" id="3_lquwl"]
 [ext_resource type="Texture2D" uid="uid://bswv4joab5bvy" path="res://assets/background/jupiter-only.png" id="4_5vw27"]
 [ext_resource type="Texture2D" uid="uid://61ssauhjp5ex" path="res://assets/fuel.svg" id="4_7mycd"]
-[ext_resource type="Script" path="res://debug_canvas.gd" id="7_272bh"]
+[ext_resource type="Theme" uid="uid://ckwnik6wg05q3" path="res://assets/theme/theme1.tres" id="7_5vw27"]
+[ext_resource type="Script" uid="uid://c5ix5kmmbuw24" path="res://debug_canvas.gd" id="7_272bh"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_ynt7j")
@@ -30,6 +31,33 @@ unique_name_in_owner = true
 ignore_rotation = false
 zoom = Vector2(2.5, 2.5)
 
+[node name="Panel" type="PanelContainer" parent="PlayerCamera"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="PlayerCamera/Panel"]
+z_index = 4096
+z_as_relative = false
+layout_mode = 2
+
+[node name="GameOverBackground" type="ColorRect" parent="PlayerCamera/Panel/CenterContainer"]
+layout_mode = 2
+color = Color(0, 0, 0, 0.886275)
+
+[node name="ReturnToStartButton" type="Button" parent="PlayerCamera/Panel/CenterContainer"]
+layout_mode = 2
+theme = ExtResource("7_5vw27")
+text = "Return"
+
 [node name="Fuel" type="TextureProgressBar" parent="PlayerCamera"]
 unique_name_in_owner = true
 offset_left = -48.0
@@ -43,3 +71,10 @@ texture_progress = ExtResource("4_7mycd")
 
 [node name="DebugCanvas" type="Node2D" parent="."]
 script = ExtResource("7_272bh")
+
+[node name="GameOverTimer" type="Timer" parent="."]
+wait_time = 300.0
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="GameOverTimer" to="." method="_on_game_over_timer_timeout"]
