@@ -40,3 +40,4 @@ theme = ExtResource("3_c3q8q")
 text = "Tutorial"
 
 [connection signal="pressed" from="CenterButtons/VBoxContainer/StartGame" to="." method="_on_start_game_pressed"]
+[connection signal="pressed" from="CenterButtons/VBoxContainer/Tutorial" to="." method="_on_tutorial_pressed"]
