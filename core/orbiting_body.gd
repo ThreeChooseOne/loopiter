@@ -7,6 +7,7 @@ signal research_area_entered(body)
 signal research_area_exited(body)
 signal research_completed(moon: OrbitingBody)
 signal player_crashed
+signal player_crash_mode_reset
 
 @export var speed: int = 100
 @export var MAX_SPEED: int = 300
@@ -155,16 +156,27 @@ func _on_area_entered(area):
 	
 	# Check if it's another OrbitingBody
 	var other_orbiting_body = area.get_parent()
+	if is_the_player_body(other_orbiting_body):
+		print("Player crashed into moon!")
+		research_timer.paused = true
+		other_orbiting_body.explode()
+	else:
+		handle_satellite_moon_collision(other_orbiting_body)
+		
+func _on_area_exited(area):
+	print("Moon stopped colliding with area: ", area.name)
+	var other_orbiting_body = area.get_parent()
+	if is_the_player_body(other_orbiting_body):
+		print("Player uncrashed into moon!")
+		research_timer.paused = false
+		player_crash_mode_reset.emit()
+
+func is_the_player_body(other_orbiting_body: OrbitingBody) -> bool:
 	if other_orbiting_body is OrbitingBody:
 		# Check if it's the player crashing into thisi moon
 		if other_orbiting_body.name == "Player":
-			print("Player crashed into moon!")
-			other_orbiting_body.explode()
-		else:
-			handle_satellite_moon_collision(other_orbiting_body)
-		
-func _on_area_exited(area):
-	print("Planet stopped colliding with area: ", area.name)
+			return true
+	return false
 	
 func explode():
 	%PlayerSprite.visible = false
@@ -266,7 +278,10 @@ func _draw() -> void:
 		var research_max_radius = planet_radius * research_range_multiplier
 		var ratio = research_timer.time_left / RESEARCH_INTERVAL
 		var radius = lerp(planet_radius, research_max_radius, ratio)
-		draw_circle(Vector2.ZERO, radius, Color.GHOST_WHITE, false, 1.0)
+		if research_timer.paused:
+			draw_circle(Vector2.ZERO, radius, Color.DARK_RED, false, 1.0)
+		else:
+			draw_circle(Vector2.ZERO, radius, Color.GHOST_WHITE, false, 1.0)
 	
 # Helper methods for external access
 func get_collision_area() -> Area2D:
