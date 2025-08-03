@@ -95,6 +95,9 @@ func _ready() -> void:
 	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
 	
 func setup_end_game_view(win: bool) -> void:
+	if $%Panel.visible:
+		# Game is already ended, don't update
+		return
 	%Panel.visible = true
 	%GameOverLabel.visible = !win
 	%WinLabel.visible = win
