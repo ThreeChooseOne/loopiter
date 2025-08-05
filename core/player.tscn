@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://d38bucw5q2q2u"]
 
-[ext_resource type="Script" uid="uid://jyfubykokonk" path="res://core/orbiting_body.gd" id="1_3x74s"]
+[ext_resource type="Script" uid="uid://chpmnbld6yo0f" path="res://core/player_body.gd" id="1_s55bn"]
 [ext_resource type="Texture2D" uid="uid://r3qtpiwsrdmm" path="res://assets/spaceBuilding_023.png" id="2_ptdtg"]
 [ext_resource type="Texture2D" uid="uid://bjpv6kjf3ew35" path="res://assets/anim/explosion/explosion00.png" id="3_s55bn"]
 [ext_resource type="Texture2D" uid="uid://dvq301uro05hy" path="res://assets/anim/explosion/explosion01.png" id="4_p73st"]
@@ -51,7 +51,7 @@ animations = [{
 }]
 
 [node name="Player" type="PathFollow2D"]
-script = ExtResource("1_3x74s")
+script = ExtResource("1_s55bn")
 metadata/_custom_type_script = "uid://jyfubykokonk"
 
 [node name="Area2D" type="Area2D" parent="."]

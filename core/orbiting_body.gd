@@ -10,8 +10,6 @@ signal player_crashed
 signal player_crash_mode_reset
 
 @export var speed: int = 100
-@export var MAX_SPEED: int = 300
-@export var MIN_SPEED: int = 50
 
 @export var planet_size: Vector2 = Vector2(75.0, 75.0)
 @export var research_range_multiplier: float = 3.0  # How much bigger research area is
@@ -142,6 +140,9 @@ func setup_research_system():
 	reset_timer.timeout.connect(_on_reset_timer_timeout)
 	add_child(reset_timer)
 
+func is_the_player() -> bool:
+	return false
+
 # Direct collision event handlers
 func _on_body_entered(body):
 	print("Moon collision with body: ", body.name)
@@ -155,39 +156,25 @@ func _on_area_entered(area):
 	area_collided.emit(area)
 	
 	# Check if it's another OrbitingBody
-	var other_orbiting_body = area.get_parent()
-	if is_the_player_body(other_orbiting_body):
+	var other_orbiting_body: OrbitingBody = area.get_parent()
+	if other_orbiting_body.is_the_player():
 		print("Player crashed into moon!")
 		research_timer.paused = true
 		other_orbiting_body.explode()
-	else:
-		handle_satellite_moon_collision(other_orbiting_body)
 		
 func _on_area_exited(area):
 	print("Moon stopped colliding with area: ", area.name)
-	var other_orbiting_body = area.get_parent()
-	if is_the_player_body(other_orbiting_body):
+	var other_orbiting_body: OrbitingBody = area.get_parent()
+	if other_orbiting_body.is_the_player():
 		print("Player uncrashed into moon!")
 		research_timer.paused = false
 		player_crash_mode_reset.emit()
-
-func is_the_player_body(other_orbiting_body: OrbitingBody) -> bool:
-	if other_orbiting_body is OrbitingBody:
-		# Check if it's the player crashing into thisi moon
-		if other_orbiting_body.name == "Player":
-			return true
-	return false
-	
-func explode():
-	%PlayerSprite.visible = false
-	%Explosion.visible = true
-	%Explosion/Timer.start()
 	
 # Research area event handlers
 func _on_research_area_entered(area):
 	# Check if it's the player's collision area
-	var potential_player = area.get_parent()
-	if potential_player is OrbitingBody and potential_player.name == "Player":
+	var potential_player: OrbitingBody = area.get_parent()
+	if potential_player.is_the_player():
 		print("Player entered research range of moon!")
 		reset_timer.stop()
 		if not player_in_research_range:
@@ -199,8 +186,8 @@ func _on_research_area_entered(area):
 	
 func _on_research_area_exited(area):
 	# Check if it's the player leaving
-	var potential_player = area.get_parent()
-	if potential_player is OrbitingBody and potential_player.name == "Player":
+	var potential_player: OrbitingBody = area.get_parent()
+	if potential_player.is_the_player():
 		print("Player left research range of moon!")
 		reset_timer.start()
 		
@@ -248,23 +235,7 @@ func make_habitable():
 
 	if planet_sprite:
 		planet_sprite.modulate = Color.GREEN
-	
-func handle_satellite_moon_collision(other_planet: OrbitingBody):
-	print("Collided with moon!")
-	
-func can_change_speed(accelerate: bool) -> bool:
-	if accelerate:
-		return speed < MAX_SPEED
-	else:
-		return speed > MIN_SPEED
 
-func request_speed_change(accelerate: bool) -> void:
-	if accelerate:
-		speed += 20
-		speed = clamp(speed, MIN_SPEED, MAX_SPEED)
-	else:
-		speed -= 20
-		speed = clamp(speed, MIN_SPEED, MAX_SPEED)
 	
 func _process(delta: float) -> void:
 	progress += speed * delta
@@ -305,9 +276,3 @@ func set_research_collision_layer(layer: int):
 func set_research_collision_mask(mask: int):
 	if research_area:
 		research_area.collision_mask = mask
-
-
-func _on_explostion_timer_timeout() -> void:
-	%Explosion.visible = false
-	%PlayerSprite.visible = true
-	player_crashed.emit()

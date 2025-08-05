@@ -4,6 +4,8 @@ enum PlayerCollisionState { PLAYER_IN_COLLISION, PLAYER_NOT_IN_COLLISION }
 # POWERADE = moving inwards
 # GATORADE = moving outwards
 enum OrbitChangeDirection { POWERADE, GATORADE }
+enum GameResultState { GAME_WON, GAME_OVER }
+enum SpeedChangeType { ACCELERATE, DECELERATE }
 
 const SECONDS_PER_MINUTE : = 60
 
@@ -33,6 +35,8 @@ const HABITABLE_CHANCE_PER_COMPLETION := 100.0 / TOTAL_MOONS
 const FUEL_COST_SWITCHING_ORBIT := 20
 const FUEL_RECOVERY_RATE_PER_SEC := 20
 const FUEL_COST_SPEED_CHANGE := 5
+const PLAYER_MAX_SPEED: int = 300
+const PLAYER_MIN_SPEED: int = 50
 
 const PLAYER_SCENE = preload("res://core/player.tscn")
 
@@ -127,6 +131,8 @@ func setup_player(player_progress_ratio: float):
 	orbits[PLAYER_ORBIT_STARTING_IDX].add_child(player)
 	player.progress_ratio = DEFAULT_PLAYER_STARTING_PROGRESS
 	update_orbit_radar_viz()
+	speed_bar.max_value = PLAYER_MAX_SPEED
+	speed_bar.min_value = PLAYER_MIN_SPEED
 
 
 func setup_collision_system():
@@ -151,23 +157,22 @@ func _ready() -> void:
 	setup_player(DEFAULT_PLAYER_STARTING_PROGRESS)
 	setup_collision_system()
 	
-	speed_bar.max_value = player.MAX_SPEED
-	speed_bar.min_value = player.MIN_SPEED
-	change_player_speed.connect(player.request_speed_change)
-	
 	# Connect to habitable moon discovery
 	habitable_moon_discovered.connect(_on_habitable_moon_discovered)
 	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
-	
 	update_research_display()
+
 	
-func setup_end_game_view(win: bool) -> void:
+func setup_end_game_view(game_result: GameResultState) -> void:
 	if $%Panel.visible:
 		# Game is already ended, don't update
 		return
 	%Panel.visible = true
-	%GameOverLabel.visible = !win
-	%WinLabel.visible = win
+	match game_result:
+		GameResultState.GAME_OVER:
+			%GameOverLabel.visible = true
+		GameResultState.GAME_WON:
+			%WinLabel.visible = true
 
 func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> OrbitingBody:
 	# Create and configure a single moon
@@ -184,7 +189,7 @@ func handle_player_crash(collision_state: PlayerCollisionState):
 		if collision_state == PlayerCollisionState.PLAYER_IN_COLLISION:
 			# We previously were not colliding, but now we are.
 			if num_loops_around == 0:
-				setup_end_game_view(false)
+				setup_end_game_view(GameResultState.GAME_OVER)
 			num_loops_around -= 1
 		player_collision_state = collision_state
 
@@ -220,7 +225,7 @@ func _on_moon_research_completed(moon: OrbitingBody):
 
 func _on_habitable_moon_discovered(moon: OrbitingBody):
 	print("GAME WON! Player discovered habitable moon: ", moon.name)
-	setup_end_game_view(true)
+	setup_end_game_view(GameResultState.GAME_WON)
 
 func move_player_orbit(orbit_change_dir: OrbitChangeDirection):
 	if fuel.value < FUEL_COST_SWITCHING_ORBIT:
@@ -270,30 +275,33 @@ func _process(delta: float) -> void:
 	%Loops.text = "Lives: %d" % num_loops_around
 
 	
-func request_player_speed_change(accelerate: bool):
+func request_player_speed_change(speed_change: SpeedChangeType):
 	if fuel.value < FUEL_COST_SPEED_CHANGE:
 		return
-	if player.can_change_speed(accelerate):
-		fuel.value -= FUEL_COST_SPEED_CHANGE
-		change_player_speed.emit(accelerate)
+	fuel.value -= FUEL_COST_SPEED_CHANGE
+	if speed_change == SpeedChangeType.ACCELERATE:
+		player.speed += 20
+	if speed_change == SpeedChangeType.DECELERATE:
+		player.speed -= 20
+	player.speed = clamp(player.speed, PLAYER_MIN_SPEED, PLAYER_MAX_SPEED)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_UP, KEY_W:
-				request_player_speed_change(true)
+				request_player_speed_change(SpeedChangeType.ACCELERATE)
 			KEY_DOWN, KEY_S:
-				request_player_speed_change(false)
+				request_player_speed_change(SpeedChangeType.DECELERATE)
 			KEY_I, KEY_A:
-				move_player_orbit.bind(OrbitChangeDirection.POWERADE).call()
+				move_player_orbit(OrbitChangeDirection.POWERADE)
 			KEY_O, KEY_D:
-				move_player_orbit.bind(OrbitChangeDirection.GATORADE).call()
+				move_player_orbit(OrbitChangeDirection.GATORADE)
 			KEY_V:
 				$DebugCanvas.toggle_viz()
 
 
 func _on_game_over_timer_timeout() -> void:
-	setup_end_game_view(false)
+	setup_end_game_view(GameResultState.GAME_OVER)
 
 func _on_main_menu_pressed() -> void:
 	goto_main_menu.emit()
