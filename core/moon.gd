@@ -44,7 +44,7 @@ func _on_area_entered(area):
 	player.explode()
 		
 func _on_area_exited(area):
-		# Only the player can interact with this collision area (mask: layer 1)
+	# Only the player can interact with this collision area (mask: layer 1)
 	var player: OrbitingBody = area.get_parent()
 	print("Player uncrashed into moon!")
 	research_timer.paused = false
