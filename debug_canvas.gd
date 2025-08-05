@@ -4,9 +4,6 @@ var debug_lines: Array[Line2D] = []
 var debug_circs: Array[Line2D] = []
 var debug_rects: Array[Line2D] = []
 
-func _init() -> void:
-	visible = false
-
 func toggle_viz() -> void:
 	visible = !visible
 

@@ -1,4 +1,4 @@
-extends Node2D
+class_name OrbitRadarViz extends Node2D
 
 var viz_orbit: BaseOrbit = null
 
@@ -7,6 +7,8 @@ var drawline: Line2D = null
 var line_alpha: float = 0 
 
 func _process(delta: float) -> void:
+	if viz_orbit == null:
+		return
 	$InvertMask.scale += 1 * delta * Vector2.ONE
 	var mask_alpha = $InvertMask.modulate.a
 	mask_alpha -= 0.7 * delta
@@ -22,6 +24,8 @@ func _draw() -> void:
 	if drawline:
 		remove_child(drawline)
 		drawline.queue_free()
+	if viz_orbit == null:
+		return
 	var line = Line2D.new()
 	line.points = viz_orbit.curve.get_baked_points()
 	line.default_color = Color.YELLOW

@@ -51,6 +51,7 @@ animations = [{
 }]
 
 [node name="Player" type="PathFollow2D"]
+rotates = false
 script = ExtResource("1_s55bn")
 metadata/_custom_type_script = "uid://jyfubykokonk"
 
