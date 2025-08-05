@@ -1,7 +1,46 @@
 extends Node2D
 
+enum PlayerCollisionState { PLAYER_IN_COLLISION, PLAYER_NOT_IN_COLLISION }
+# POWERADE = moving inwards
+# GATORADE = moving outwards
+enum OrbitChangeDirection { POWERADE, GATORADE }
+enum GameResultState { GAME_WON, GAME_OVER }
+enum SpeedChangeType { ACCELERATE, DECELERATE }
+
+const SECONDS_PER_MINUTE : = 60
+
+# Orbit System constants
+const NUM_TOTAL_ORBITS := 21
+const NUM_MOONS_PER_ORBIT := 3
+const MIN_ORBIT_RADIUS := 500
+const MAX_ORBIT_RADIUS = 1000
+const VALID_MOON_ORBIT_INDICES := [0, 5, 10, 15, 20]
+const PLAYER_ORBIT_STARTING_IDX := 10
+const MIN_ORBIT_SPEED := 60
+const MAX_ORBIT_SPEED := 140
+const DEFAULT_PLAYER_STARTING_PROGRESS := 0.0
+
+# Moon settings
+const TOTAL_MOONS := 15
+const MIN_DISTANCE_FROM_PLAYER := 0.25  # Keep moons at least 25% away from player on orbit 10
+const MAX_RANDOM_MOON_OFFSET := 0.05	# Moon positions are jittered within this range
+
+# Research settings
+const PLAYER_COLLISION_LAYER := 1
+const MOON_COLLISION_LAYER := 2
+const RESEARCH_COLLISION_LAYER := 4
+const HABITABLE_CHANCE_PER_COMPLETION := 100.0 / TOTAL_MOONS
+
+# Controls settings
+const FUEL_COST_SWITCHING_ORBIT := 20
+const FUEL_RECOVERY_RATE_PER_SEC := 20
+const FUEL_COST_SPEED_CHANGE := 5
+const PLAYER_MAX_SPEED: int = 300
+const PLAYER_MIN_SPEED: int = 50
+
+const PLAYER_SCENE = preload("res://core/player.tscn")
+
 var orbits: Array[BaseOrbit] = []
-const player_scene = preload("res://core/player.tscn")
 var player: OrbitingBody
 
 # Track all moons for signal management
@@ -10,6 +49,8 @@ var all_moons: Array[OrbitingBody] = []
 # Store speed for each orbit that has moons
 var orbit_speeds: Dictionary = {}
 
+var player_orbit_idx := PLAYER_ORBIT_STARTING_IDX
+
 # Habitable Moon System
 var completed_research_count: int = 0
 var habitable_moon_found: bool = false
@@ -17,6 +58,10 @@ var habitable_moon: OrbitingBody = null
 
 var num_loops_around: int = 0
 var last_progress: float = 0.0
+
+# The current state of the player if they are in collision with an object.
+# true means the player is currently colliding, false means they are not.
+var player_collision_state: PlayerCollisionState = PlayerCollisionState.PLAYER_NOT_IN_COLLISION
 
 signal change_player_speed(accelerate: bool)
 
@@ -31,200 +76,103 @@ signal habitable_moon_discovered(moon: OrbitingBody)
 @onready var animation_player: AnimationPlayer = %AnimationPlayer
 @onready var researched_moons: RichTextLabel = %ResearchedMoons
 
-const fuel_cost = 20
-
-const num_orbits = 21
-const moons_per_orbit = 3
-
-# Define which orbits should have moons (same as debug visualization)
-const moon_orbit_indices = [0, 5, 10, 15, 20]
-
-# Speed range for orbits with moons
-const MIN_ORBIT_SPEED = 60
-const MAX_ORBIT_SPEED = 140
-
-# Moon positioning settings
-const MIN_MOON_DISTANCE = 0.15 # Minimum distance between moons (as fraction of orbit)
-const POSITION_RANDOMNESS = 0.08  # How much to randomly offset from even spacing
-const MIN_DISTANCE_FROM_PLAYER = 0.25  # Keep moons at least 25% away from player on orbit 10
-
-# Habitable Moon settings
-const TOTAL_MOONS = 15
-
-const HABITABLE_CHANCE_PER_COMPLETION = 100.0 / TOTAL_MOONS  # 6.67% per completion
-
-func _ready() -> void:
-	# Add 21 orbits
-	var min_orbit_radius = 500
-	var max_orbit_radius = 1000
-	
-	for n in num_orbits:
+func setup_orbits():
+	for n in NUM_TOTAL_ORBITS:
 		# TODO: figure out the radius ranges
-		var center = Vector2.ZERO
-		var orbit_radius = min_orbit_radius + (n/float(num_orbits))*(max_orbit_radius - min_orbit_radius)
+		const center := Vector2.ZERO
+		var orbit_radius = lerp(MIN_ORBIT_RADIUS, MAX_ORBIT_RADIUS, float(n)/NUM_TOTAL_ORBITS)
 		var new_orbit = BaseOrbit.new(orbit_radius, center)
 		orbits.append(new_orbit)
 		add_child(new_orbit)
-		
-	
-	# Generate random speeds for moon orbits
-	generate_orbit_speeds()
-	
-	# Add moons only to specific orbits
-	populate_selected_orbits_with_moons()
-	
-	# Debug visualization
-	#orbits[0].visualize_debug(true)
-	#orbits[5].visualize_debug(true)
-	#orbits[10].visualize_debug(true)
-	#orbits[15].visualize_debug(true)
-	#orbits[20].visualize_debug(true)
-	
-	# Create player on orbit 10
-	player = player_scene.instantiate()
-	player.name = "Player" # Important for collision detection
-	orbits[10].add_child(player)
-	
-	# Set up player collision if it's also an OrbitingBody
-	if player is OrbitingBody:
-		player.set_collision_layer(1)  # Player layer
-		player.set_collision_mask(2 + 4)   # Can collide with moon layer (2) and research layer (4)
-		player.body_collided.connect(_on_player_collision)
-		player.player_crashed.connect(handle_player_crash.bind(true))
-		#player.player_crash_mode_reset.connect(handle_player_crash.bind(false))
-	
-	change_player_speed.connect(player.request_speed_change)
-	
-	# Connect to habitable moon discovery
-	habitable_moon_discovered.connect(_on_habitable_moon_discovered)
-	
-	$PlayerCamera/HaloMask.add_orbit_viz(orbits[10])
-	
-	speed_bar.max_value = player.MAX_SPEED
-	speed_bar.min_value = player.MIN_SPEED
-	
-	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
-	
-	update_research_display()
-	
-func setup_end_game_view(win: bool) -> void:
-	if $%Panel.visible:
-		# Game is already ended, don't update
-		return
-	%Panel.visible = true
-	%GameOverLabel.visible = !win
-	%WinLabel.visible = win
-	
-func generate_orbit_speeds():
 	# Generate a random speed for each orbit that will have moons
-	for orbit_index in moon_orbit_indices:
+	for orbit_index in VALID_MOON_ORBIT_INDICES:
 		var random_speed = randi_range(MIN_ORBIT_SPEED, MAX_ORBIT_SPEED)
 		orbit_speeds[orbit_index] = random_speed
 		print("Orbit ", orbit_index, " speed: ", random_speed)
 
-func populate_selected_orbits_with_moons():
-	# Add moons only to the orbits with debug visualization
-	for orbit_index in moon_orbit_indices:
-		add_moons_to_orbit(orbit_index)
-	print("Created ", all_moons.size(), " moons across ", moon_orbit_indices.size(), " orbits")
+func setup_moons(player_progress_ratio: float):
+	# Possible positions for the moon can be represented as a float value in [0, 1]
+	#
+	# In the simplest case, where there is no player:
+	#	* Discretize the orbit range into N equally spaced positions
+	#	* Adjust all positions equally with some random jitter
+	#	* Adjust each position with additional random jitter
+	#	* For each moon, take a position at random and assign it to the moon's progress ratio
+	#
+	# In the case where the player is present, we reserve some part of the interval for the player
+	# E.g. [0, 1] -> [0, 0.5], if the player requires [-0.25, 0.25] to be free
+	# Then we run the same steps as above, but with a smaller N.
+	# Finally, we adjust the moon positions so that the player's interval does not contain a moon.
+	for orbit_idx in VALID_MOON_ORBIT_INDICES:
+		var initial_offset_in_orbit := randf() * MAX_RANDOM_MOON_OFFSET
+		
+		var num_possible_moon_positions := 5
+		if orbit_idx == PLAYER_ORBIT_STARTING_IDX:
+			num_possible_moon_positions = 3
+		var possible_moon_positions := range(num_possible_moon_positions)
+		possible_moon_positions.shuffle()
+		
+		for moon_idx in range(NUM_MOONS_PER_ORBIT):
+			var seed_moon_pos: float = float(possible_moon_positions[moon_idx])/num_possible_moon_positions
+			var moon_starting_pos: float = initial_offset_in_orbit + seed_moon_pos + randf()*MAX_RANDOM_MOON_OFFSET
+			if orbit_idx == PLAYER_ORBIT_STARTING_IDX:
+				moon_starting_pos *= (1.0 - 2*MIN_DISTANCE_FROM_PLAYER)
+				moon_starting_pos += MIN_DISTANCE_FROM_PLAYER
+			moon_starting_pos = fmod(moon_starting_pos, 1.0)
+			var moon = create_moon(orbit_idx, moon_idx, orbit_speeds[orbit_idx])
+			orbits[orbit_idx].add_child(moon)
+			all_moons.append(moon)
+			moon.progress_ratio = moon_starting_pos
+	
+func setup_player(player_progress_ratio: float):
+	# Create player on orbit 10
+	player = PLAYER_SCENE.instantiate()
+	player.name = "Player" # Important for collision detection
+	orbits[PLAYER_ORBIT_STARTING_IDX].add_child(player)
+	player.progress_ratio = DEFAULT_PLAYER_STARTING_PROGRESS
+	update_orbit_radar_viz()
+	speed_bar.max_value = PLAYER_MAX_SPEED
+	speed_bar.min_value = PLAYER_MIN_SPEED
 
-func add_moons_to_orbit(orbit_index: int):
-	# Add multiple moons to a specific orbit with proper spacing
-	var orbit = orbits[orbit_index]
-	var orbit_speed = orbit_speeds[orbit_index]
-	
-		# Generate positions for all moons in this orbit (player-aware for orbit 10)
-	var moon_positions = generate_moon_positions_safe(moons_per_orbit, orbit_index)
-	
-	for moon_index in range(moons_per_orbit):
-		var moon = create_moon(orbit_index, moon_index, orbit_speed)
-		orbit.add_child(moon)
-		all_moons.append(moon)
-		
-		# Use the calculated position
-		var moon_progress = moon_positions[moon_index]
-		moon.progress_ratio = moon_progress
-		
-		print("Created moon ", moon.name, " at progress ", "%.3f" % moon_progress, " with speed ", orbit_speed)
-		
-		# Extra safety check for player orbit
-		if orbit_index == 10:
-			var distance_from_player = calculate_circular_distance(moon_progress, 0.0)
-			print("  Distance from player: ", "%.3f" % distance_from_player)
 
-func generate_moon_positions_safe(num_moons: int, orbit_index: int) -> Array[float]:
-	# Generate well-spaced positions for moons, avoiding player if on same orbit
-	var positions: Array[float] = []
-	var player_position = 0.0  # Player starts at progress 0
+func setup_collision_system():
+	player.set_collision_layer(PLAYER_COLLISION_LAYER)  # Player layer
+	# Can collide with moon layer (2) and research layer (4)
+	player.set_collision_mask(MOON_COLLISION_LAYER + RESEARCH_COLLISION_LAYER) 
+	player.player_crashed.connect(handle_player_crash.bind(PlayerCollisionState.PLAYER_IN_COLLISION))
 	
-	# Start with even spacing
-	for i in range(num_moons):
-		var base_position = float(i) / float(num_moons)
-		positions.append(base_position)
+	for moon in all_moons:
+		moon.set_collision_layer(MOON_COLLISION_LAYER) # Moon layer
+		moon.set_collision_mask(PLAYER_COLLISION_LAYER) # Can collide with player layer
+		# Set up research area layers
+		moon.set_research_collision_layer(RESEARCH_COLLISION_LAYER) # Research area layer
+		moon.set_research_collision_mask(PLAYER_COLLISION_LAYER) # Can detect player layer
+		# Connect collision signals
+		moon.player_crash_mode_reset.connect(handle_player_crash.bind(PlayerCollisionState.PLAYER_NOT_IN_COLLISION))
+		moon.research_completed.connect(_on_moon_research_completed)
+
+func _ready() -> void:
+	setup_orbits()
+	setup_moons(DEFAULT_PLAYER_STARTING_PROGRESS)
+	setup_player(DEFAULT_PLAYER_STARTING_PROGRESS)
+	setup_collision_system()
 	
-	# If this is the player's orbit, adjust base positions to avoid player
-	if orbit_index == 10:
-		positions = adjust_positions_for_player(positions, player_position)
+	# Connect to habitable moon discovery
+	habitable_moon_discovered.connect(_on_habitable_moon_discovered)
+	print("Habitable Moon System initialized - ", TOTAL_MOONS, " moons, ", "%.1f" % HABITABLE_CHANCE_PER_COMPLETION, "% chance per completion")
+	update_research_display()
+
 	
-	# Add controlled randomness while maintaining minimum distance
-	for i in range(positions.size()):
-		var random_offset = randf_range(-POSITION_RANDOMNESS, POSITION_RANDOMNESS)
-		var new_position = positions[i] + random_offset
-		
-		# Wrap around the orbit (0.0 to 1.0)
-		new_position = fmod(new_position + 1.0, 1.0)
-		
-		# Check if this position is valid (far enough from other moons AND player)
-		var valid_position = is_position_valid(new_position, positions, i)
-		
-		# If this is the player's orbit, also check distance from player
-		if orbit_index == 10:
-			var distance_from_player = calculate_circular_distance(new_position, player_position)
-			if distance_from_player < MIN_DISTANCE_FROM_PLAYER:
-				valid_position = false
-		
-		if valid_position:
-			positions[i] = new_position
-		# If not valid, keep the original safe position
-	
-	return positions
-	
-func adjust_positions_for_player(positions: Array[float], player_position: float) -> Array[float]:
-	# Adjust base positions to ensure they're far from player
-	var safe_positions: Array[float] = []
-	
-	for i in range(positions.size()):
-		var base_pos = positions[i]
-		var distance_from_player = calculate_circular_distance(base_pos, player_position)
-		
-		if distance_from_player < MIN_DISTANCE_FROM_PLAYER:
-			# Move this position to a safe location
-			var safe_pos = player_position + MIN_DISTANCE_FROM_PLAYER + (i * 0.15)
-			safe_pos = fmod(safe_pos, 1.0)  # Wrap around
-			safe_positions.append(safe_pos)
-			print("  Adjusted moon ", i, " from ", "%.3f" % base_pos, " to ", "%.3f" % safe_pos, " (too close to player)")
-		else:
-			safe_positions.append(base_pos)
-	
-	return safe_positions
-	
-func is_position_valid(test_position: float, existing_positions: Array[float], skip_index: int) -> bool:
-	# Check if a position is far enough from all other moons
-	for i in range(existing_positions.size()):
-		if i == skip_index:
-			continue  # Don't compare with self
-		
-		var distance = calculate_circular_distance(test_position, existing_positions[i])
-		if distance < MIN_MOON_DISTANCE:
-			return false
-	
-	return true
-	
-func calculate_circular_distance(pos1: float, pos2: float) -> float:
-	# Calculate the shortest distance between two positions on a circle
-	var direct_distance = abs(pos1 - pos2)
-	var wrap_distance = 1.0 - direct_distance
-	return min(direct_distance, wrap_distance)
+func setup_end_game_view(game_result: GameResultState) -> void:
+	if $%Panel.visible:
+		# Game is already ended, don't update
+		return
+	%Panel.visible = true
+	match game_result:
+		GameResultState.GAME_OVER:
+			%GameOverLabel.visible = true
+		GameResultState.GAME_WON:
+			%WinLabel.visible = true
 
 func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> OrbitingBody:
 	# Create and configure a single moon
@@ -234,38 +182,16 @@ func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> Orbitin
 	
 	# Set the moon's speed to match its orbit
 	moon.speed = orbit_speed
-	
-	# Set up collision layers
-	moon.set_collision_layer(2) # Moon layer
-	moon.set_collision_mask(1) # Can collide with player layer
-	
-	# Set up research area layers
-	moon.set_research_collision_layer(4) # Research area layer
-	moon.set_research_collision_mask(1) # Can detect player layer
-	
-	# Connect collision signals
-	moon.body_collided.connect(_on_moon_collision)
-	#moon.player_crashed.connect(handle_player_crash.bind(true))
-	moon.player_crash_mode_reset.connect(handle_player_crash.bind(false))
-	
-	moon.research_area_entered.connect(_on_moon_research_entered)
-	moon.research_area_exited.connect(_on_moon_research_exited)
-	moon.research_completed.connect(_on_moon_research_completed)
-	
 	return moon
 
-var curr_player_crash := false
-func handle_player_crash(enter_crash: bool):
-	if curr_player_crash and not enter_crash:
-		# we were crashing now we are leaving collision
-		print('safe')
-	if not curr_player_crash and enter_crash:
-		# we were crashing now we are leaving collision
-		if num_loops_around == 0:
-			setup_end_game_view(false)
-		num_loops_around -= 1
-	# update the crashing state
-	curr_player_crash = enter_crash
+func handle_player_crash(collision_state: PlayerCollisionState):
+	if player_collision_state != collision_state:
+		if collision_state == PlayerCollisionState.PLAYER_IN_COLLISION:
+			# We previously were not colliding, but now we are.
+			if num_loops_around == 0:
+				setup_end_game_view(GameResultState.GAME_OVER)
+			num_loops_around -= 1
+		player_collision_state = collision_state
 
 # Habitable Moon System
 func _on_moon_research_completed(moon: OrbitingBody):
@@ -299,63 +225,35 @@ func _on_moon_research_completed(moon: OrbitingBody):
 
 func _on_habitable_moon_discovered(moon: OrbitingBody):
 	print("GAME WON! Player discovered habitable moon: ", moon.name)
-	setup_end_game_view(true)
+	setup_end_game_view(GameResultState.GAME_WON)
 
-# Collision event handlers
-func _on_moon_collision(body):
-	print("Moon collided with body: ", body.name)
-	
-	# Check if it's the player
-	if body == player:
-		handle_player_moon_collision()
-
-func _on_player_collision(body):
-	print("Player collided with: ", body.name)
-	
-# Research event handlers
-func _on_moon_research_entered(player_body):
-	print("MAIN: Player entered moon research range!")
-
-func _on_moon_research_exited(player_body):
-	print("MAIN: Player left moon research range!")
-
-func handle_player_moon_collision():
-	print("PLAYER HIT THE MOON!")
-
-func move_player_outer_orbit():
-	move_player_orbit(true)
-
-func move_player_inner_orbit():
-	move_player_orbit(false)
-
-func move_player_orbit(out: bool):
-	if fuel.value < fuel_cost:
+func move_player_orbit(orbit_change_dir: OrbitChangeDirection):
+	if fuel.value < FUEL_COST_SWITCHING_ORBIT:
 		animation_player.play("blink_red")
 		return
 	animation_player.stop()
-	fuel.value -= fuel_cost
+	fuel.value -= FUEL_COST_SWITCHING_ORBIT
 
-	var curr = current_player_orbit()
-	var new = curr + (1 if out else -1)
-	new = clamp(new, 0, num_orbits - 1)
-	if new != curr:
+	var curr_orbit_idx := player_orbit_idx
+	var next_orbit_idx := curr_orbit_idx
+	if orbit_change_dir == OrbitChangeDirection.POWERADE:
+		next_orbit_idx -= 1
+	else:
+		next_orbit_idx += 1
+	next_orbit_idx = clamp(next_orbit_idx, 0, NUM_TOTAL_ORBITS - 1)
+	if next_orbit_idx != curr_orbit_idx:
 		var progress_ratio = player.progress_ratio
-		orbits[curr].remove_child(player)
-		orbits[new].add_child(player)
+		orbits[curr_orbit_idx].remove_child(player)
+		orbits[next_orbit_idx].add_child(player)
 		# Keep player angle the same between orbits
 		player.progress_ratio = progress_ratio
-		$PlayerCamera/HaloMask.add_orbit_viz(orbits[new])
-
-func current_player_orbit() -> int:
-	for i in len(orbits):
-		if orbits[i].get_children().has(player):
-			return i
-	return -1
+		player_orbit_idx = next_orbit_idx
+		update_orbit_radar_viz()
 
 func update_hud_timer() -> void:
 	var time_left_secs = $GameOverTimer.time_left
-	var minutes = int(time_left_secs / 60)
-	var seconds: int = time_left_secs - (minutes*60)
+	var minutes = int(time_left_secs / SECONDS_PER_MINUTE)
+	var seconds: int = time_left_secs - (minutes * SECONDS_PER_MINUTE)
 	%Timer.text = "%s:%02d" % [str(minutes), seconds]
 	speed_bar.value = player.speed
 	
@@ -363,48 +261,47 @@ func update_research_display():
 	if researched_moons:
 		researched_moons.text = "Researched Moons: %d/%d" % [completed_research_count, TOTAL_MOONS]
 
+func update_orbit_radar_viz():
+	%OrbitRadarViz.add_orbit_viz(orbits[player_orbit_idx])
+
 func _process(delta: float) -> void:
 	camera.position = player.position
-	fuel.value = fuel.value + 20 * delta
+	fuel.value = fuel.value + FUEL_RECOVERY_RATE_PER_SEC * delta
 	update_hud_timer()
 	var curr_progress = player.progress_ratio
 	if curr_progress < last_progress:
 		num_loops_around += 1
 	last_progress = player.progress_ratio
 	%Loops.text = "Lives: %d" % num_loops_around
-	
 
-	# Example Code:
-	#
-	# $DebugCanvas.debug_draw_line(player.position, $JupiterBackground.position)
-	# $DebugCanvas.debug_draw_circ(player.position, 150)
-	# var f = 50*Vector2.ONE
-	# $DebugCanvas.debug_draw_rect(player.position-f, player.position+f)
 	
-func request_player_speed_change(accelerate: bool):
-	if fuel.value < 5:
+func request_player_speed_change(speed_change: SpeedChangeType):
+	if fuel.value < FUEL_COST_SPEED_CHANGE:
 		return
-	if player.can_change_speed(accelerate):
-		fuel.value -= 5
-		change_player_speed.emit(accelerate)
+	fuel.value -= FUEL_COST_SPEED_CHANGE
+	if speed_change == SpeedChangeType.ACCELERATE:
+		player.speed += 20
+	if speed_change == SpeedChangeType.DECELERATE:
+		player.speed -= 20
+	player.speed = clamp(player.speed, PLAYER_MIN_SPEED, PLAYER_MAX_SPEED)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_UP, KEY_W:
-				request_player_speed_change(true)
+				request_player_speed_change(SpeedChangeType.ACCELERATE)
 			KEY_DOWN, KEY_S:
-				request_player_speed_change(false)
+				request_player_speed_change(SpeedChangeType.DECELERATE)
 			KEY_I, KEY_A:
-				move_player_inner_orbit()
+				move_player_orbit(OrbitChangeDirection.POWERADE)
 			KEY_O, KEY_D:
-				move_player_outer_orbit()
+				move_player_orbit(OrbitChangeDirection.GATORADE)
 			KEY_V:
 				$DebugCanvas.toggle_viz()
 
 
 func _on_game_over_timer_timeout() -> void:
-	setup_end_game_view(false)
+	setup_end_game_view(GameResultState.GAME_OVER)
 
 func _on_main_menu_pressed() -> void:
 	goto_main_menu.emit()
