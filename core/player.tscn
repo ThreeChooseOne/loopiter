@@ -51,7 +51,13 @@ animations = [{
 }]
 
 [node name="Player" type="PathFollow2D"]
+rotates = false
 script = ExtResource("1_s55bn")
+current_fuel = null
+curr_orbit_idx = null
+speed = null
+planet_size = null
+research_range_multiplier = null
 metadata/_custom_type_script = "uid://jyfubykokonk"
 
 [node name="Area2D" type="Area2D" parent="."]

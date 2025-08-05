@@ -8,5 +8,4 @@ script = ExtResource("1_itajj")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_c77vg")
-autoplay = true
 parameters/looping = true
