@@ -1,0 +1,66 @@
+[gd_scene load_steps=8 format=3 uid="uid://ce5stmv5u0gq8"]
+
+[ext_resource type="Texture2D" uid="uid://bj1m013tqxbw6" path="res://assets/planets/planet00.png" id="1_044tf"]
+[ext_resource type="Script" uid="uid://dshgntyx3fb1x" path="res://core/moon.gd" id="1_os458"]
+[ext_resource type="Texture2D" uid="uid://dgk12erf83fbs" path="res://assets/light5.png" id="2_s00qm"]
+[ext_resource type="Texture2D" uid="uid://cko1c37bawhm0" path="res://assets/tank.svg" id="4_meg8r"]
+[ext_resource type="Texture2D" uid="uid://61ssauhjp5ex" path="res://assets/fuel.svg" id="5_qtekx"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_g2wd8"]
+radius = 100.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_044tf"]
+radius = 26.0
+
+[node name="MoonBody" type="PathFollow2D"]
+script = ExtResource("1_os458")
+metadata/_custom_type_script = "uid://jyfubykokonk"
+
+[node name="ResearchTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 5.0
+
+[node name="ResetTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.1
+
+[node name="ResearchArea" type="Area2D" parent="."]
+collision_layer = 4
+
+[node name="RangeIndicator" type="Sprite2D" parent="ResearchArea"]
+unique_name_in_owner = true
+modulate = Color(0.8, 0.8, 0.8, 0.0980392)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_s00qm")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ResearchArea"]
+shape = SubResource("CircleShape2D_g2wd8")
+
+[node name="MoonSprite" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+scale = Vector2(0.05, 0.05)
+texture = ExtResource("1_044tf")
+
+[node name="CollisionArea" type="Area2D" parent="."]
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CollisionArea"]
+shape = SubResource("CircleShape2D_044tf")
+
+[node name="ResearchBar" type="TextureProgressBar" parent="."]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = -34.0
+offset_right = 120.0
+offset_bottom = 6.0
+scale = Vector2(-0.5, -0.5)
+max_value = 3.0
+texture_under = ExtResource("4_meg8r")
+texture_progress = ExtResource("5_qtekx")
+
+[connection signal="timeout" from="ResearchTimer" to="." method="_on_research_timer_timeout"]
+[connection signal="timeout" from="ResetTimer" to="." method="_on_reset_timer_timeout"]
+[connection signal="area_entered" from="ResearchArea" to="." method="_on_research_area_entered"]
+[connection signal="area_exited" from="ResearchArea" to="." method="_on_research_area_exited"]
+[connection signal="area_entered" from="CollisionArea" to="." method="_on_area_entered"]
+[connection signal="area_exited" from="CollisionArea" to="." method="_on_area_exited"]
