@@ -26,9 +26,6 @@ const MIN_DISTANCE_FROM_PLAYER := 0.25  # Keep moons at least 25% away from play
 const MAX_RANDOM_MOON_OFFSET := 0.05	# Moon positions are jittered within this range
 
 # Research settings
-const PLAYER_COLLISION_LAYER := 1
-const MOON_COLLISION_LAYER := 2
-const RESEARCH_COLLISION_LAYER := 4
 const HABITABLE_CHANCE_PER_COMPLETION := 100.0 / TOTAL_MOONS
 
 # Controls settings
