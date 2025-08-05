@@ -21,12 +21,10 @@ const MIN_DISTANCE_FROM_PLAYER := 0.25  # Keep moons at least 25% away from play
 const MAX_RANDOM_MOON_OFFSET := 0.05	# Moon positions are jittered within this range
 
 # Research settings
-const PLAYER_COLLISION_LAYER := 1
-const MOON_COLLISION_LAYER := 2
-const RESEARCH_COLLISION_LAYER := 4
 const HABITABLE_CHANCE_PER_COMPLETION := 100.0 / TOTAL_MOONS
 
-const PLAYER_SCENE = preload("res://core/player.tscn")
+const PLAYER_SCENE: PackedScene = preload("res://core/player.tscn")
+const MOON_SCENE: PackedScene = preload("res://core/moon.tscn")
 
 var orbits: Array[BaseOrbit] = []
 var player: PlayerBody
@@ -125,17 +123,8 @@ func setup_player(player_progress_ratio: float):
 	player.curr_orbit_idx = PLAYER_ORBIT_STARTING_IDX
 
 func setup_collision_system():
-	player.set_collision_layer(PLAYER_COLLISION_LAYER)  # Player layer
-	# Can collide with moon layer (2) and research layer (4)
-	player.set_collision_mask(MOON_COLLISION_LAYER + RESEARCH_COLLISION_LAYER) 
 	player.player_crashed.connect(handle_player_crash.bind(Types.PlayerCollisionState.PLAYER_IN_COLLISION))
-	
 	for moon in all_moons:
-		moon.set_collision_layer(MOON_COLLISION_LAYER) # Moon layer
-		moon.set_collision_mask(PLAYER_COLLISION_LAYER) # Can collide with player layer
-		# Set up research area layers
-		moon.set_research_collision_layer(RESEARCH_COLLISION_LAYER) # Research area layer
-		moon.set_research_collision_mask(PLAYER_COLLISION_LAYER) # Can detect player layer
 		# Connect collision signals
 		moon.player_crash_mode_reset.connect(handle_player_crash.bind(Types.PlayerCollisionState.PLAYER_NOT_IN_COLLISION))
 		moon.research_completed.connect(_on_moon_research_completed)
@@ -163,9 +152,10 @@ func setup_end_game_view(game_result: Types.GameResultState) -> void:
 
 func create_moon(orbit_index: int, moon_index: int, orbit_speed: int) -> OrbitingBody:
 	# Create and configure a single moon
-	var moon = OrbitingBody.new()
+	var moon: MoonBody = MOON_SCENE.instantiate()
 	moon.name = "Moon_" + str(orbit_index) + "_" + str(moon_index)
-	moon.init_random_planet()
+	moon.call_deferred("set_random_sprite")
+	
 	# Set the moon's speed to match its orbit
 	moon.speed = orbit_speed
 	return moon

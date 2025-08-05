@@ -18,6 +18,8 @@ var orbit_radar_viz: OrbitRadarViz = null
 
 signal fuel_unavailable
 
+signal player_crashed
+
 func _ready() -> void:
 	var orbit_radar_viz_scene: PackedScene = load("res://jazz/circular_halo_mask.tscn")
 	orbit_radar_viz = orbit_radar_viz_scene.instantiate()
@@ -27,9 +29,6 @@ func explode():
 	%PlayerSprite.visible = false
 	%Explosion.visible = true
 	%Explosion/Timer.start()
-	
-func is_the_player() -> bool:
-	return true
 
 func _on_explostion_timer_timeout() -> void:
 	%Explosion.visible = false
@@ -49,11 +48,11 @@ func move_player_orbit(orbit_change_dir: Types.OrbitChangeDirection, orbits: Arr
 	if curr_orbit_idx == next_orbit_idx:
 		return
 	current_fuel -= FUEL_COST_SWITCHING_ORBIT
-	#var curr_progress_ratio := progress_ratio
+	var curr_progress_ratio := progress_ratio
 	orbits[curr_orbit_idx].remove_child(self)
 	orbits[next_orbit_idx].add_child(self)
 	# Keep player angle the same between orbits
-	#progress_ratio = curr_progress_ratio
+	progress_ratio = curr_progress_ratio
 	update_orbit_radar_viz(orbits[next_orbit_idx])
 	curr_orbit_idx = next_orbit_idx
 
