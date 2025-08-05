@@ -22,6 +22,7 @@ wait_time = 5.0
 
 [node name="ResetTimer" type="Timer" parent="."]
 unique_name_in_owner = true
+wait_time = 0.1
 
 [node name="ResearchArea" type="Area2D" parent="."]
 collision_layer = 4

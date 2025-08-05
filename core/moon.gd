@@ -2,7 +2,7 @@ class_name MoonBody extends OrbitingBody
 
 const RESEARCH_ON_MODULATION = Color(1.0, 1.0, 1.0, 0.2)
 const RESEARCH_OFF_MODULATION = Color(0.8, 0.8, 0.8, 0.1)
-const INDICATOR_MAX_SIZE = 40.0
+const INDICATOR_MAX_SIZE = 100.0
 const INDICATOR_MIN_SIZE = 26.0
 
 const ALL_SPRITES = [
@@ -119,7 +119,7 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	if !research_timer.is_stopped():
-		var ratio = research_timer.time_left / reset_timer.wait_time
+		var ratio = research_timer.time_left / research_timer.wait_time
 		var radius = lerp(INDICATOR_MIN_SIZE, INDICATOR_MAX_SIZE, ratio)
 		if research_timer.paused:
 			draw_circle(Vector2.ZERO, radius, Color.DARK_RED, false, 1.0)
